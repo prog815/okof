@@ -1,0 +1,177 @@
+{
+  "classifier_name": "ОКОФ",
+  "classifier_full_name": "Общероссийский классификатор основных фондов (ОКОФ)",
+  "standard_line": "Классификатор ОК 013-2014 (СНС 2008) с изменением № 29/2026. Введено 01.10.2026 . Приказ Росстандарта от 11.08.2026 №947-ст.",
+  "change": "изменение № 29/2026",
+  "effective_date": "2026-10-01",
+  "effective_date_display": "1 октября 2026",
+  "early_apply_date": "",
+  "legal_act": "Классификатор ОК 013-2014 (СНС 2008) с изменением № 29/2026. Введено 01.10.2026 . Приказ Росстандарта от 11.08.2026 №947-ст.",
+  "source_identifier": "okof-classifikators",
+  "source_page": "https://classifikators.ru/okof",
+  "source_file_url": "https://classifikators.ru/assets/downloads/okof/okof.xlsx",
+  "source_filename": "okof.xlsx",
+  "source_sha256": "4fe93223041f6dd0045a1f543b777790dc92e5a6849c3560b2fc12fb3af9ecc3",
+  "source_modified": "Wed, 30 Sep 2026 21:44:34 GMT",
+  "source_date": "2026-10-01",
+  "source_date_display": "1 октября 2026",
+  "source_date_origin": "editorial_effective_date",
+  "valid_until": "",
+  "provenance": "classifikators.ru · изменение № 29/2026",
+  "generated_at": "2026-10-20T14:11:22.068455+00:00",
+  "version": "2026-10-01",
+  "records_count": 2099,
+  "declared_count": 2099,
+  "sections_count": 22,
+  "sections": [
+    {
+      "section": "100",
+      "name": "Жилые здания и помещения",
+      "count": 22
+    },
+    {
+      "section": "200",
+      "name": "Здания (кроме жилых) и сооружения, расходы на улучшение земель",
+      "count": 1
+    },
+    {
+      "section": "210",
+      "name": "Здания (кроме жилых)",
+      "count": 99
+    },
+    {
+      "section": "220",
+      "name": "Сооружения",
+      "count": 220
+    },
+    {
+      "section": "230",
+      "name": "Расходы на улучшение земель",
+      "count": 8
+    },
+    {
+      "section": "300",
+      "name": "Машины и оборудование, включая хозяйственный инвентарь, и другие объекты",
+      "count": 1
+    },
+    {
+      "section": "310",
+      "name": "Транспортные средства",
+      "count": 234
+    },
+    {
+      "section": "320",
+      "name": "Информационное, компьютерное и телекоммуникационное (икт) оборудование",
+      "count": 48
+    },
+    {
+      "section": "330",
+      "name": "Прочие машины и оборудование, включая хозяйственный инвентарь, и другие объекты",
+      "count": 1222
+    },
+    {
+      "section": "400",
+      "name": "Системы вооружений",
+      "count": 22
+    },
+    {
+      "section": "500",
+      "name": "Культивируемые биологические ресурсы",
+      "count": 1
+    },
+    {
+      "section": "510",
+      "name": "Культивируемые ресурсы животного происхождения, неоднократно дающие продукцию",
+      "count": 164
+    },
+    {
+      "section": "520",
+      "name": "Культивируемые ресурсы растительного происхождения, неоднократно дающие продукцию",
+      "count": 9
+    },
+    {
+      "section": "600",
+      "name": "Расходы на передачу прав собственности на непроизведенные активы",
+      "count": 2
+    },
+    {
+      "section": "700",
+      "name": "Объекты интеллектуальной собственности",
+      "count": 1
+    },
+    {
+      "section": "710",
+      "name": "Научные исследования и разработки",
+      "count": 11
+    },
+    {
+      "section": "720",
+      "name": "Расходы на разведку недр и оценку запасов полезных ископаемых",
+      "count": 2
+    },
+    {
+      "section": "730",
+      "name": "Программное обеспечение и базы данных",
+      "count": 1
+    },
+    {
+      "section": "731",
+      "name": "Программное обеспечение",
+      "count": 2
+    },
+    {
+      "section": "732",
+      "name": "Базы данных",
+      "count": 10
+    },
+    {
+      "section": "740",
+      "name": "Оригиналы произведений развлекательного жанра, литературы или искусства",
+      "count": 12
+    },
+    {
+      "section": "790",
+      "name": "Другие объекты интеллектуальной собственности",
+      "count": 7
+    }
+  ],
+  "record_format": [
+    "code",
+    "codeNorm",
+    "name",
+    "section"
+  ],
+  "record_format_description": "code = code from source with dots, string, length 5..12 digits (not normalized, no zfill); codeNorm = digits of code without dots (for search and sort); name = name from source (normalized whitespace); section = first 3 digits of codeNorm = fixed asset type code (22 types from source). Flat model, no hierarchy, no aliases, no manual overlays.",
+  "flat_model": true,
+  "hierarchy": "none",
+  "aliases_included": false,
+  "manual_overlays": [],
+  "code_system_note": "Код ОКОФ имеет структуру XXX.XX.XX.XX.XXX: первые три знака — код вида основных фондов (22 вида, гармонизированы с СНС 2008), последующие — код ОКПД2 переменной длины. Код хранится строкой в формате источника (с точками); поле codeNorm — цифры без точек для поиска и сортировки. Иерархия в v1 не строится: в источнике отсутствуют надёжные родительские связи, пригодные для автоматического дерева. Группировка по видам ОФ (раздел = первые 3 знака) 100% соответствует источнику.",
+  "hierarchy_note": "Справочник публикуется как плоский список с группировкой по 22 видам основных фондов (раздел = первые 3 знака кода). Глубокое дерево (раздел → подраздел → класс → подкласс → вид) в источнике не задано явно; попытка построить его по цифровому префиксу даёт пропущенные уровни и требует ручных правил. Поэтому иерархия сознательно не строится.",
+  "disclaimer": "Материалы носят справочный характер и не являются точными копиями официальных документов. Перед применением в официальных документах сверяйте по первоисточнику (Росстандарт). ОКОФ не устанавливает амортизационные группы — они определены в ПП РФ № 1 от 01.01.2002.",
+  "primary_sources": [
+    {
+      "name": "classifikators.ru (машиночитаемый снимок)",
+      "url": "https://classifikators.ru/okof"
+    },
+    {
+      "name": "Росстандарт (первоисточник ОК 013-2014)",
+      "url": "https://protect.gost.ru/"
+    },
+    {
+      "name": "ПП РФ № 1 от 01.01.2002 (амортизационные группы, отдельный слой)",
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_26587/"
+    }
+  ],
+  "statistics": {
+    "records": 2099,
+    "sections": 22,
+    "sections_with_records": 22
+  },
+  "warnings": [],
+  "critical_errors": [],
+  "publish_allowed": true,
+  "data_hash": "60f156be058f5da6",
+  "file_size_json": 298305,
+  "file_size_json_gz": 45603
+}
