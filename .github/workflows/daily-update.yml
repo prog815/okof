@@ -98,8 +98,91 @@ jobs:
             fi
           fi
 
-      - name: Commit and push changes
+      - name: Check metadata — гейт публикации META_OK
         if: env.FILES_OK == 'true'
+        run: |
+          # v-next.2: гейт публикации перед коммитом.
+          # Блокирует коммит, если:
+          #   - publish_allowed != true
+          #   - critical_errors не пустой
+          #   - data_hash_full невалиден (не 64 hex)
+          #   - data_hash невалиден (не 16 hex) или data_hash != data_hash_full[:16]
+          #   - records_count <= 0
+          # Не роняет workflow (exit 0), чтобы финальный round-trip под if: always()
+          # всё равно отработал. Флаг META_OK=false не даёт Commit and push выполниться.
+          python - <<'EOF'
+          import json, re, os, sys
+
+          with open('okof_meta.json', encoding='utf-8') as f:
+              meta = json.load(f)
+
+          errors = []
+
+          # 1) publish_allowed
+          if meta.get('publish_allowed') is not True:
+              errors.append("publish_allowed is not True (got %r)" % (meta.get('publish_allowed'),))
+
+          # 2) critical_errors
+          crit = meta.get('critical_errors')
+          if not isinstance(crit, list):
+              errors.append("critical_errors is not a list")
+          elif len(crit) > 0:
+              errors.append("critical_errors not empty: %d item(s); first: %r" % (len(crit), crit[0]))
+
+          # 3) data_hash_full
+          data_hash_full = meta.get('data_hash_full')
+          if not isinstance(data_hash_full, str) or not re.fullmatch(r'[0-9a-f]{64}', data_hash_full or ''):
+              errors.append("data_hash_full is not a valid sha256 hex (64 lowercase hex chars)")
+
+          # 4) data_hash
+          data_hash = meta.get('data_hash')
+          if not isinstance(data_hash, str) or not re.fullmatch(r'[0-9a-f]{16}', data_hash or ''):
+              errors.append("data_hash is not a valid prefix (16 lowercase hex chars)")
+
+          # 5) data_hash == data_hash_full[:16]
+          if (isinstance(data_hash, str) and isinstance(data_hash_full, str)
+                  and data_hash and data_hash_full and data_hash != data_hash_full[:16]):
+              errors.append("data_hash != data_hash_full[:16]")
+
+          # 6) records_count
+          records_count = meta.get('records_count')
+          if not isinstance(records_count, int) or records_count <= 0:
+              errors.append("records_count <= 0 (got %r)" % (records_count,))
+
+          # Non-blocking diagnostics in the log
+          print("META diagnostics:")
+          print("  classifier_name:", meta.get('classifier_name'))
+          print("  change_display:", meta.get('change_display'))
+          print("  records_count:", records_count)
+          print("  declared_count:", meta.get('declared_count'))
+          print("  sections_count:", meta.get('sections_count'))
+          print("  publish_allowed:", meta.get('publish_allowed'))
+          print("  critical_errors:", len(crit) if isinstance(crit, list) else crit)
+          print("  warnings:", len(meta.get('warnings') or []))
+          print("  data_hash:", data_hash)
+          print("  data_hash_full:", data_hash_full)
+          print("  presence_guard_version:", meta.get('presence_guard_version'))
+
+          env_path = os.environ['GITHUB_ENV']
+
+          if errors:
+              print()
+              for e in errors:
+                  print("::error::META: " + e)
+              with open(env_path, 'a', encoding='utf-8') as f:
+                  f.write('META_OK=false\n')
+              print()
+              print("META_OK=false — коммит будет пропущен, сайт остаётся на последней хорошей версии")
+              sys.exit(0)
+
+          with open(env_path, 'a', encoding='utf-8') as f:
+              f.write('META_OK=true\n')
+          print()
+          print("META_OK=true — метаданные прошли гейт публикации")
+          EOF
+
+      - name: Commit and push changes
+        if: env.FILES_OK == 'true' && env.META_OK == 'true'
         run: |
           git config --local user.email "github-actions@github.com"
           git config --local user.name "GitHub Actions"
