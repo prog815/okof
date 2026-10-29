@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ОКОФ — Общероссийский классификатор основных фондов</title>
 <meta name="description" content="Поиск по ОКОФ: числовой код (с точками и без), наименование, раздел. Плоский справочник основных фондов без дерева. Источник — машиночитаемый снимок классификатора.">
-<meta name="theme-color" content="#e8f0f7">
+<meta name="theme-color" content="#eef4ee">
 <link rel="icon" type="image/svg+xml" href="https://prog815.github.io/common-menu/favicon.svg?v=1.0.0">
 <style>
   :root{
@@ -31,6 +31,7 @@
   }
   a{color:var(--accent-text)}
   .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+  [hidden]{display:none!important}
 
   /* header */
   .hero{padding:18px 0 6px}
@@ -47,9 +48,9 @@
   .hints{margin:10px 0 0;color:var(--muted);font-size:13px}
   .hints .mono{font-family:var(--mono);letter-spacing:.3px}
 
-  /* sticky search panel */
+  /* search panel */
   .panel{
-    position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);
+    background:rgba(255,255,255,.92);
     backdrop-filter:saturate(1.1) blur(6px);
     border-bottom:1px solid var(--line);padding:12px 0;margin-top:0;
   }
@@ -73,7 +74,7 @@
   select#section-filter{
     padding:11px 14px;border:1px solid var(--line-strong);border-radius:10px;
     font-size:15px;background:var(--panel);color:var(--text);cursor:pointer;
-    flex:0 1 300px; outline:none;
+    flex:0 1 320px; outline:none;
   }
   select#section-filter:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-weak)}
 
@@ -81,7 +82,11 @@
   .statusline{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;
     color:var(--muted);font-size:13px;padding:2px 2px 0}
   .statusline .found b{color:var(--text)}
-  .statusline .date{white-space:nowrap;text-align:right;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .reset-link{
+    font-size:13px;color:var(--muted);text-decoration:underline dashed;
+    text-underline-offset:3px;white-space:nowrap;cursor:pointer;transition:color .15s;
+  }
+  .reset-link:hover{color:var(--accent-text)}
 
   /* results */
   main{padding:14px 0 30px}
@@ -102,27 +107,30 @@
   .code,.code-norm{
     font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.4px;
     border:1px solid transparent;border-radius:8px;padding:4px 9px;cursor:pointer;white-space:nowrap;
-    transition:all 0.15s;
+    transition:border-color .15s, background .15s;
   }
   .code{background:var(--code-bg);color:var(--code-fg);font-size:15px}
   .code:hover{border-color:var(--code);background:#d9ebd9}
   .code-norm{background:var(--norm-bg);color:var(--norm-fg);font-size:13px;font-weight:500}
   .code-norm:hover{border-color:var(--norm);background:#e2ece2}
-  
+
   .badge-sec{
     font:inherit;font-size:12px;border-radius:999px;padding:4px 10px;cursor:pointer;
     border:1px solid transparent;white-space:nowrap;
     background:var(--sec-bg);color:var(--sec-fg);
-    transition:all 0.15s;
+    transition:border-color .15s, background .15s;
   }
   .badge-sec:hover{border-color:var(--sec);background:#e2daf2}
-  
-  .copy-full{
-    margin-left:auto;border:1px dashed var(--line-strong);background:#fbfcfe;color:var(--muted);
+
+  .card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto;align-items:center}
+  .btn-small{
+    display:inline-flex;align-items:center;gap:4px;
+    border:1px dashed var(--line-strong);background:#fbfcfe;color:var(--muted);
     border-radius:8px;padding:4px 9px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap;
+    transition:background .15s, border-color .15s;
   }
-  .copy-full:hover{border-color:var(--accent);color:var(--accent-text);background:var(--accent-weak)}
-  
+  .btn-small:hover{border-color:var(--accent);color:var(--accent-text);background:var(--accent-weak)}
+
   .name{margin-top:9px;font-size:15.5px;font-weight:650;word-break:break-word}
   mark{background:var(--mark);border-radius:3px;padding:0 1px;color:inherit}
 
@@ -132,17 +140,21 @@
     color:var(--accent-text);font:inherit;font-size:14px;cursor:pointer;box-shadow:var(--shadow);
   }
   .more button:hover{border-color:var(--accent);background:var(--accent-weak)}
+  .more button:disabled{opacity:.5;cursor:default}
 
   /* footer */
   footer{border-top:1px solid var(--line);background:var(--panel)}
   footer .wrap{padding:18px 16px 30px;color:var(--muted);font-size:14px}
   footer h4{margin:0 0 8px;color:var(--text);font-size:15px}
-  footer .lead{margin:0 0 12px;color:var(--text)}
+  footer .lead{margin:0 0 4px;color:var(--text)}
   footer .lead b{font-weight:600}
-  footer .links{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin:0 0 10px}
-  footer .links .cap{color:var(--muted)}
-  footer .links a{white-space:nowrap}
-  footer .disc{margin:10px 0 0;font-size:13px;color:#6b7385;line-height: 1.5;}
+  .date-line{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .sources{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .sources-row{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+  .sources-row .cap{color:var(--muted)}
+  .sources-row a{white-space:nowrap;text-decoration:none;border-bottom:1px solid transparent}
+  .sources-row a:hover{border-bottom-color:var(--accent)}
+  footer .disc{margin:0;font-size:13px;color:#6b7385;line-height:1.5}
 
   /* floating buttons + toast */
   .fab{position:fixed;right:16px;display:flex;flex-direction:column;gap:8px;z-index:40}
@@ -160,24 +172,25 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  @media (max-width:720px){
+  @media (max-width:640px){
     .hero h1{font-size:25px}
     .row1{flex-direction:column;align-items:stretch}
     .row1>*{width:100%}
     .searchbox{flex:auto}
     select#section-filter{width:100%;flex:auto}
-    .statusline{flex-direction:column;gap:2px}
-    .statusline .date{text-align:left}
-    .copy-full{margin-left:0}
+    .statusline{flex-direction:column;gap:2px;align-items:flex-start}
+    .reset-link{margin-top:4px}
+    .card-top{flex-direction:column;align-items:stretch}
+    .card-actions{margin-left:0;justify-content:flex-start}
+    .btn-small{justify-content:center}
   }
 </style>
 </head>
 <body>
-<!--
-  Версия каталога после добавления ОКОФ — ?v=2.8.0.
--->
-<script src="https://prog815.github.io/common-menu/menu.js?v=2.8.0"></script>
+<script src="https://prog815.github.io/common-menu/menu.js?v=3.0.0"></script>
 <common-projects-menu></common-projects-menu>
+
+<script src="https://prog815.github.io/common-menu/share.js?v=1.0.0"></script>
 
 <div class="wrap hero">
   <h1>ОКОФ</h1>
@@ -188,8 +201,10 @@
   <div class="notice">
     <b>ОКОФ — это код основного средства.</b>
     Для поиска по видам экономической деятельности используйте
-    <a href="https://prog815.github.io/okved2/">ОКВЭД2</a>, для поиска по продукции —
-    <a href="https://prog815.github.io/okpd2/">ОКПД2</a>.
+    <a href="https://prog815.github.io/okved2/" rel="noopener" target="_blank">ОКВЭД2</a>,
+    для поиска по продукции —
+    <a href="https://prog815.github.io/okpd2/" rel="noopener" target="_blank">ОКПД2</a>.
+    Амортизационные группы определяются отдельно, по ПП РФ № 1 от 01.01.2002.
   </div>
 
   <div class="hints">
@@ -203,19 +218,18 @@
   <div class="wrap">
     <div class="row1">
       <div class="searchbox" id="searchbox">
-        <input id="q" type="search" autocomplete="off" spellcheck="false"
+        <input id="q" type="text" autocomplete="off" spellcheck="false"
                placeholder="Код (с точками или без) или название"
                aria-label="Поиск по ОКОФ">
-        <button class="clear" id="clear" type="button" title="Очистить запрос" aria-label="Очистить запрос">×</button>
+        <button class="clear" id="clear" type="button" title="Очистить запрос" aria-label="Очистить запрос">✕</button>
       </div>
       <select id="section-filter" aria-label="Фильтр по разделу">
         <option value="">Все виды ОФ</option>
-        <!-- Заполняется JS -->
       </select>
     </div>
     <div class="statusline">
       <div class="found" id="found">Загрузка…</div>
-      <div class="date" id="dateLine"></div>
+      <a href="#" id="resetFilters" class="reset-link" title="Очистить запрос и фильтр">Очистить</a>
     </div>
   </div>
 </div>
@@ -234,16 +248,10 @@
   <div class="wrap">
     <h4>О справочнике</h4>
     <p class="lead" id="footLead"></p>
-    <div class="links">
-      <span class="cap">Источник данных (машиночитаемый снимок):</span>
-      <a href="https://classifikators.ru/okof" rel="noopener" target="_blank">classifikators.ru — ОКОФ</a>
-    </div>
-    <div class="links">
-      <span class="cap">Текстовые редакции для сверки:</span>
-      <a href="https://www.consultant.ru/document/cons_doc_LAW_184368/" rel="noopener" target="_blank">КонсультантПлюс</a>
-      <a href="https://internet.garant.ru/#/document/71153994" rel="noopener" target="_blank">Гарант</a>
-      <a href="https://docs.cntd.ru/document/1200121648" rel="noopener" target="_blank">Кодекс</a>
-      <a href="https://github.com/prog815/okof" rel="noopener" target="_blank">О справочнике</a>
+    <div class="date-line" id="dateLineFoot"></div>
+    <div class="sources">
+      <div class="sources-row" id="sourcesPrimary"></div>
+      <div class="sources-row" id="sourcesSecondary"></div>
     </div>
     <p class="disc" id="footDisc"></p>
   </div>
@@ -267,33 +275,48 @@
   var PAGE_SIZE = 20;
   var DEBOUNCE_MS = 180;
   var SCROLL_THRESHOLD = 300;
-  var EMPTY_PQ = {digits:"", tokens:[], rawTerms:[], full:""};
+  var EMPTY_PQ = {digits:"", tokens:[], rawTerms:[], full:"", isCodeOnly:false};
 
-  // Формат веб-записи ОКОФ:
+  // формат веб-записи ОКОФ:
   // [code, codeNorm, name, section]
   var F_CODE=0, F_NORM=1, F_NAME=2, F_SEC=3;
 
+  // В футере:
+  //   «Источник данных (машиночитаемый снимок)» → classifikators.ru
+  //   «Первоисточники и текстовые редакции для сверки» → Консультант/Гарант/Кодекс + О справочнике
+  // Росстандарт (protect.gost.ru) и ПП № 1 (амортизационные группы) в футер не выводим.
+  var DEFAULT_PRIMARY_SOURCES = [
+    { name: 'classifikators.ru — ОКОФ', url: 'https://classifikators.ru/okof', role: 'primary' }
+  ];
+  var DEFAULT_SECONDARY_SOURCES = [
+    { name: 'КонсультантПлюс', url: 'https://www.consultant.ru/document/cons_doc_LAW_184368/', role: 'secondary' },
+    { name: 'Гарант', url: 'https://internet.garant.ru/#/document/71153994', role: 'secondary' },
+    { name: 'Кодекс', url: 'https://docs.cntd.ru/document/1200121648', role: 'secondary' }
+  ];
+
   // ---------- состояние ----------
   var RECORDS = [];
-  var BY_CODE = {};
+  var BY_NORM = {};
   var filtered = [];
   var shown = PAGE_SIZE;
   var META = null;
-  var pendingFocusCode = "";
+  var activeDeepLinkCode = null;
 
   // ---------- dom ----------
   var $ = function(id){return document.getElementById(id);};
   var elState=$("state"), elList=$("list"), elMoreWrap=$("moreWrap"), elMore=$("more");
   var elQ=$("q"), elClear=$("clear"), elBox=$("searchbox"), elSec=$("section-filter"),
-      elFound=$("found"), elDate=$("dateLine"),
+      elFound=$("found"), elDateFoot=$("dateLineFoot"),
       elFootLead=$("footLead"),
       elFootDisc=$("footDisc"), elToast=$("toast"),
-      elTop=$("toTop"), elBottom=$("toBottom");
+      elTop=$("toTop"), elBottom=$("toBottom"),
+      elSourcesPrimary=$("sourcesPrimary"), elSourcesSecondary=$("sourcesSecondary"),
+      elReset=$("resetFilters");
 
   // ---------- утилиты ----------
   function norm(s){
     s = String(s==null?"":s).toLowerCase().replace(/ё/g,"е");
-    s = s.replace(/[^a-zа-я0-9]+/g," ");
+    s = s.replace(/[^\p{L}\p{N}]+/gu," ");
     s = s.replace(/\s+/g," ").trim();
     return s;
   }
@@ -310,16 +333,18 @@
     if(n10>=2 && n10<=4 && (n100<10||n100>=20)) return forms[1];
     return forms[2];
   }
-  function fmtRuDate(iso){
-    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||""));
-    if(!m) return iso||"";
-    return m[3]+"."+m[2]+"."+m[1];
+
+  // Нормализация ?code= на входе: принимаем и «210.00.11.10.110», и «210001110110».
+  function normalizeCodeQuery(raw){
+    return String(raw==null?"":raw).replace(/\D/g,"");
   }
+
   function commonPrefixOk(a,b){
     var max = Math.min(5, a.length, b.length);
     if(max < 4) return false;
     return a.slice(0,max) === b.slice(0,max);
   }
+
   function extractWords(text){
     var n = norm(text);
     return n ? n.split(" ").filter(Boolean) : [];
@@ -346,7 +371,7 @@
   async function loadAll(){
     elState.hidden=false; elState.className=""; elState.textContent="Загрузка данных справочника…";
     elList.hidden=true; elList.innerHTML=""; elMoreWrap.hidden=true; elMore.textContent="";
-    elFound.textContent="Загрузка…"; elDate.textContent="";
+    elFound.textContent="Загрузка…"; elDateFoot.textContent="";
 
     var data, meta=null;
     try{
@@ -362,17 +387,18 @@
     try{ meta = await fetchJson(META_GZ, META_JSON); }catch(e){ meta=null; }
 
     META = meta;
-    initUI();
+    initSectionFilter();
     buildIndexes(data);
     renderFooter();
     renderDateLine();
     parseUrlAndApply();
   }
 
-  function initUI() {
+  // ---------- фильтр по 22 видам ОФ ----------
+  function initSectionFilter(){
     elSec.innerHTML = '<option value="">Все виды ОФ</option>';
-    if (META && META.sections) {
-      META.sections.forEach(function(sec) {
+    if (META && Array.isArray(META.sections)) {
+      META.sections.forEach(function(sec){
         var opt = document.createElement("option");
         opt.value = sec.section;
         opt.textContent = sec.section + " — " + sec.name + " (" + sec.count + ")";
@@ -383,17 +409,17 @@
 
   // ---------- построение индексов ----------
   function buildIndexes(arr){
-    RECORDS = []; BY_CODE = {};
+    RECORDS = []; BY_NORM = {};
     if(!Array.isArray(arr)) arr=[];
 
     for(var i=0;i<arr.length;i++){
       var it = arr[i]||[];
       var code = String(it[F_CODE]==null?"":it[F_CODE]).trim();
       var codeNorm = String(it[F_NORM]==null?"":it[F_NORM]).trim();
-      var name = String(it[F_NAME]==null?"":it[F_NAME]).trim();
-      var sec = String(it[F_SEC]==null?"":it[F_SEC]).trim();
-
       if(!code || !codeNorm) continue;
+
+      var name = String(it[F_NAME]==null?"":it[F_NAME]).trim();
+      var section = String(it[F_SEC]==null?"":it[F_SEC]).trim();
 
       var nName = norm(name);
       var words = extractWords(name);
@@ -402,14 +428,14 @@
         code: code,
         codeNorm: codeNorm,
         name: name,
-        sec: sec,
+        section: section,
         nName: nName,
         words: words,
         searchBlob: norm(code + " " + codeNorm + " " + name)
       };
 
       RECORDS.push(rec);
-      BY_CODE[codeNorm] = rec;
+      BY_NORM[codeNorm] = rec;
     }
   }
 
@@ -420,8 +446,11 @@
     var n = norm(raw);
     var tokens = n ? n.split(" ").filter(Boolean) : [];
     var rawTerms = raw.trim().split(/\s+/).filter(Boolean);
-
-    return {digits:digits, tokens:tokens, rawTerms:rawTerms, full:tokens.join(" ")};
+    // «Только код» = все токены — цифры, точки и/или пробелы
+    var isCodeOnly = rawTerms.length > 0 && rawTerms.every(function(t){
+      return /^[\d\s\.]+$/.test(t);
+    });
+    return {digits:digits, tokens:tokens, rawTerms:rawTerms, full:tokens.join(" "), isCodeOnly:isCodeOnly};
   }
 
   function tokenMatches(token, rec){
@@ -436,39 +465,28 @@
   }
 
   function scoreRecord(r, pq){
-    var score=0;
-
-    // Определяем, состоит ли запрос ТОЛЬКО из цифр, точек и пробелов
-    var isCodeOnly = pq.rawTerms.length > 0 && pq.rawTerms.every(function(t){ 
-      return /^[\d\s\.]+$/.test(t); 
-    });
-
-    if (isCodeOnly && pq.digits) {
-      // Строгий префиксный поиск по коду
-      if (r.codeNorm === pq.digits) return 100;
-      if (r.codeNorm.indexOf(pq.digits) === 0) return 75;
-      // Если запрос содержит точки (например, 100.00.10), 
-      // проверяем точное начало с точками
+    // Строго префиксный поиск, если запрос состоит только из цифр/точек/пробелов.
+    if(pq.isCodeOnly && pq.digits){
+      if(r.codeNorm === pq.digits) return 100;
+      if(r.codeNorm.indexOf(pq.digits) === 0) return 75;
       var qRaw = pq.rawTerms.join("");
-      if (r.code.indexOf(qRaw) === 0) return 75;
-      
-      return null; // При поиске только по коду вхождения в середину игнорируются
+      if(r.code.indexOf(qRaw) === 0) return 75;
+      return null; // вхождения в середину кода игнорируются
     }
 
-    // Обычный поиск (если есть буквы)
+    var score = 0;
+
     if(pq.digits){
       if(r.codeNorm === pq.digits) score += 100;
       else if(r.codeNorm.indexOf(pq.digits) === 0) score += 75;
     }
 
-    // AND по токенам
     if(pq.tokens.length){
       for(var ti=0; ti<pq.tokens.length; ti++){
         if(!tokenMatches(pq.tokens[ti], r)) return null;
       }
     }
 
-    // точные / частичные совпадения по тексту
     if(pq.full){
       if(r.nName === pq.full) score += 60;
       else if(r.nName.indexOf(pq.full) === 0) score += 50;
@@ -478,6 +496,7 @@
     for(var k=0;k<pq.tokens.length;k++){
       var t = pq.tokens[k];
       if(r.nName.indexOf(t) >= 0) score += 5;
+      if(r.codeNorm.indexOf(t) >= 0) score += 2;
     }
 
     if(score <= 0) return null;
@@ -489,24 +508,29 @@
     var hasQuery = !!(pq.digits || pq.tokens.length);
     var secFilter = elSec.value;
 
-    var base = RECORDS.filter(function(r) {
-      if (secFilter && r.sec !== secFilter) return false;
-      return true;
-    });
-
-    if(hasQuery){
-      var scored=[];
-      for(var a=0;a<base.length;a++){
-        var s = scoreRecord(base[a], pq);
-        if(s!==null) scored.push({r:base[a], s:s});
-      }
-      scored.sort(function(x,y){
-        if(y.s !== x.s) return y.s - x.s;
-        return x.r.codeNorm < y.r.codeNorm ? -1 : x.r.codeNorm > y.r.codeNorm ? 1 : 0;
-      });
-      filtered = scored.map(function(o){return o.r;});
+    if(activeDeepLinkCode){
+      var match = BY_NORM[activeDeepLinkCode];
+      filtered = match ? [match] : [];
     }else{
-      filtered = base;
+      var base = RECORDS.filter(function(r){
+        if (secFilter && r.section !== secFilter) return false;
+        return true;
+      });
+
+      if(hasQuery){
+        var scored=[];
+        for(var a=0;a<base.length;a++){
+          var s = scoreRecord(base[a], pq);
+          if(s!==null) scored.push({r:base[a], s:s});
+        }
+        scored.sort(function(x,y){
+          if(y.s !== x.s) return y.s - x.s;
+          return x.r.codeNorm < y.r.codeNorm ? -1 : x.r.codeNorm > y.r.codeNorm ? 1 : 0;
+        });
+        filtered = scored.map(function(o){return o.r;});
+      }else{
+        filtered = base;
+      }
     }
 
     filtered._pq = pq;
@@ -550,6 +574,34 @@
       elMore.textContent="";
       elMoreWrap.hidden=true;
     }
+
+    bindShareButtons();
+  }
+
+  // ---------- share ----------
+  function bindShareButtons() {
+    var slots = elList.querySelectorAll('.share-slot');
+    slots.forEach(function(slot) {
+      var code = slot.dataset.code || '';
+      var normCode = slot.dataset.norm || '';
+      var name = slot.dataset.name || '';
+      var rowText = slot.dataset.row || '';
+
+      var wrap = document.createElement('klassik-share');
+      wrap.setAttribute('catalog', 'okof');
+      wrap.setAttribute('title', 'ОКОФ: ' + code + ' — ' + name);
+      wrap.setAttribute('text', rowText);
+      wrap.setAttribute('url', location.origin + location.pathname + '?code=' + encodeURIComponent(normCode));
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-small';
+      btn.title = 'Поделиться карточкой';
+      btn.innerHTML = '📤 Поделиться';
+      wrap.appendChild(btn);
+
+      slot.parentNode.replaceChild(wrap, slot);
+    });
   }
 
   // ---------- подсветка ----------
@@ -579,15 +631,15 @@
 
     var top = document.createElement("div"); top.className="card-top";
 
-    // код с точками
+    // код с точками (raw)
     var codeBtn = document.createElement("button");
     codeBtn.type="button"; codeBtn.className="code";
     codeBtn.innerHTML = hlCode(r.code, digits);
     codeBtn.title = "Копировать код с точками: "+r.code;
-    codeBtn.dataset.act="copy-code"; codeBtn.dataset.val=r.code;
+    codeBtn.dataset.act="copy-code"; codeBtn.dataset.val=r.code; codeBtn.dataset.norm=r.codeNorm;
     top.appendChild(codeBtn);
 
-    // код без точек
+    // код без точек (codeNorm)
     var normBtn = document.createElement("button");
     normBtn.type="button"; normBtn.className="code-norm";
     normBtn.innerHTML = hlCode(r.codeNorm, digits);
@@ -595,68 +647,48 @@
     normBtn.dataset.act="copy-norm"; normBtn.dataset.val=r.codeNorm;
     top.appendChild(normBtn);
 
-    // бейдж раздела (фильтрует)
-    if (r.sec) {
-      var secData = META?.sections?.find(function(s){return s.section === r.sec;});
+    // бейдж раздела (кликабельный фильтр)
+    if(r.section){
+      var secData = (META && META.sections) ? META.sections.find(function(s){return s.section === r.section;}) : null;
       var secName = secData ? secData.name : "Раздел";
-      
-      var secBadge = document.createElement("button");
-      secBadge.type="button"; secBadge.className="badge-sec";
-      secBadge.textContent = r.sec + " — " + secName;
-      secBadge.title = "Показать только раздел " + r.sec;
-      secBadge.dataset.act="filter-sec"; secBadge.dataset.val=r.sec;
-      top.appendChild(secBadge);
+      var secBtn = document.createElement("button");
+      secBtn.type="button"; secBtn.className="badge-sec";
+      secBtn.textContent = r.section + " — " + secName;
+      secBtn.title = "Показать только раздел " + r.section;
+      secBtn.dataset.act="filter-sec"; secBtn.dataset.val=r.section;
+      top.appendChild(secBtn);
     }
 
-    // копировать строку
-    var copyFull = document.createElement("button");
-    copyFull.type="button"; copyFull.className="copy-full";
-    var fullVal = [r.code, r.name].join("; ");
-    copyFull.textContent = "📋 строка";
-    copyFull.title = "Скопировать: "+fullVal;
-    copyFull.dataset.act="copy-full"; copyFull.dataset.val=fullVal;
-    top.appendChild(copyFull);
+    // actions
+    var actions = document.createElement("div"); actions.className = "card-actions";
 
+    var fullVal = [r.code, r.name].join("; ");
+
+    var rowBtn = document.createElement("button");
+    rowBtn.type="button"; rowBtn.className="btn-small";
+    rowBtn.innerHTML = "📋 строка";
+    rowBtn.title = "Скопировать: "+fullVal;
+    rowBtn.dataset.act="copy-full"; rowBtn.dataset.val=fullVal;
+    actions.appendChild(rowBtn);
+
+    var shareSlot = document.createElement("span");
+    shareSlot.className = "share-slot";
+    shareSlot.dataset.code = r.code;
+    shareSlot.dataset.norm = r.codeNorm;
+    shareSlot.dataset.name = r.name;
+    shareSlot.dataset.row = fullVal;
+    actions.appendChild(shareSlot);
+
+    top.appendChild(actions);
     card.appendChild(top);
 
-    // название
+    // наименование
     var name = document.createElement("div"); name.className="name";
     name.innerHTML = hlText(r.name, terms);
     card.appendChild(name);
 
     li.appendChild(card);
     return li;
-  }
-
-  // ---------- редакция / футер ----------
-  function renderDateLine(){
-    var parts=[];
-    if(META && META.change) {
-      var chDate = META.source_date_display ? " от " + META.source_date_display : "";
-      parts.push(META.change + chDate);
-    }
-    elDate.textContent = parts.join(" · ");
-
-    var titleParts=[];
-    if(META && META.standard_line) titleParts.push(META.standard_line);
-    if(META && META.provenance) titleParts.push(META.provenance);
-    elDate.title = titleParts.join(" | ");
-  }
-
-  function renderFooter(){
-    var total = RECORDS.length;
-    var s = "В справочнике "+fmtNum(total)+" "+plural(total,["запись","записи","записей"])+
-            " и "+ (META?.sections?.length || 0) +" "+plural((META?.sections?.length || 0),["вид ОФ","вида ОФ","видов ОФ"]) + ".";
-    elFootLead.innerHTML = escHtml(s).replace(/(\d[\d\u00a0.]*)/g,"<b>$1</b>");
-
-    var disc = (META && META.disclaimer)
-      ? META.disclaimer
-      : "Материалы носят справочный характер и не являются точными копиями официальных документов. Перед применением в официальных документах сверяйте по первоисточнику.";
-    
-    // Убираем упоминание амортизационных групп, если оно было в мете
-    disc = disc.replace(/ОКОФ не устанавливает амортизационные группы[^.]*\./gi, '').trim();
-
-    elFootDisc.textContent = disc;
   }
 
   // ---------- навигация ----------
@@ -674,32 +706,47 @@
   // ---------- URL ----------
   function parseUrlAndApply(){
     var sp = new URLSearchParams(location.search);
-    var code = sp.get("code") || "";
+    var rawCode = sp.get("code");
     var q = sp.get("q") || "";
     var sec = sp.get("section") || "";
 
     elSec.value = sec;
 
-    pendingFocusCode = "";
-    if(code){
-      elQ.value = code;
-      pendingFocusCode = code;
-    }else{
-      elQ.value = q;
+    if(rawCode){
+      var codeNorm = normalizeCodeQuery(rawCode);
+      activeDeepLinkCode = codeNorm;
+      elQ.value = rawCode;
+      syncClear();
+      applyFilters();
+      focusCode(codeNorm);
+      return;
     }
-    syncClear();
 
+    activeDeepLinkCode = null;
+    elQ.value = q;
+    syncClear();
     applyFilters();
-    if(pendingFocusCode) focusCode(pendingFocusCode);
   }
-  
+
+  // В URL пишем только ?section=, если он задан (поиск эфемерный).
+  // Если активен ?code= — URL не трогаем, там уже канонический параметр.
   function syncUrl(){
+    if(activeDeepLinkCode) return;
     var sp = new URLSearchParams();
-    var q = elQ.value.trim(); if(q) sp.set("q", q);
     var sec = elSec.value; if(sec) sp.set("section", sec);
     var qs = sp.toString();
     var url = location.pathname + (qs?("?"+qs):"");
     try{ history.replaceState(null,"",url); }catch(e){}
+  }
+
+  function syncCodeToUrl(codeNorm){
+    try{ history.replaceState(null, "", location.pathname + "?code=" + encodeURIComponent(codeNorm)); }catch(e){}
+  }
+
+  function clearCodeFromUrl(){
+    if (location.search.indexOf("code=") >= 0) {
+      try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){}
+    }
   }
 
   // ---------- копирование + тост ----------
@@ -708,7 +755,7 @@
     elToast.textContent = msg;
     elToast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ elToast.classList.remove("show"); }, 1600);
+    toastTimer = setTimeout(function(){ elToast.classList.remove("show"); }, 1800);
   }
   function copyText(text, label){
     var done=function(){ toast(label); };
@@ -727,12 +774,22 @@
   function onListClick(e){
     var btn = e.target.closest("[data-act]");
     if(!btn) return;
-    var act = btn.dataset.act, val = btn.dataset.val;
-    
-    if(act==="copy-code") copyText(val, "Код "+val+" скопирован");
-    else if(act==="copy-norm") copyText(val, "Код без точек "+val+" скопирован");
-    else if(act==="copy-full") copyText(val, "Скопировано: "+val);
-    else if(act==="filter-sec") {
+    var act = btn.dataset.act, val = btn.dataset.val, normVal = btn.dataset.norm;
+
+    if(act==="copy-code"){
+      copyText(val, "Код "+val+" скопирован");
+      if(normVal){ activeDeepLinkCode = normVal; syncCodeToUrl(normVal); }
+    }
+    else if(act==="copy-norm"){
+      copyText(val, "Код без точек "+val+" скопирован");
+      activeDeepLinkCode = val; syncCodeToUrl(val);
+    }
+    else if(act==="copy-full"){
+      copyText(val, "Скопировано: "+val);
+    }
+    else if(act==="filter-sec"){
+      activeDeepLinkCode = null;
+      clearCodeFromUrl();
       elSec.value = val;
       applyFilters();
       syncUrl();
@@ -745,15 +802,41 @@
 
   var deb=null;
   function onInput(){
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
     syncClear();
     clearTimeout(deb);
     deb=setTimeout(function(){ applyFilters(); syncUrl(); }, DEBOUNCE_MS);
   }
 
   elQ.addEventListener("input", onInput);
-  elQ.addEventListener("search", function(){ syncClear(); applyFilters(); syncUrl(); });
-  elClear.addEventListener("click", function(){ elQ.value=""; syncClear(); applyFilters(); syncUrl(); elQ.focus(); });
-  elSec.addEventListener("change", function(){ applyFilters(); syncUrl(); });
+  elQ.addEventListener("search", function(){
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
+    syncClear(); applyFilters(); syncUrl();
+  });
+  elClear.addEventListener("click", function(){
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
+    elQ.value=""; syncClear(); applyFilters(); syncUrl(); elQ.focus();
+  });
+  elSec.addEventListener("change", function(){
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
+    applyFilters();
+    syncUrl();
+  });
+  elReset.addEventListener("click", function(e){
+    e.preventDefault();
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
+    elQ.value="";
+    elSec.value="";
+    syncClear();
+    applyFilters();
+    syncUrl();
+    elQ.focus();
+  });
   elMore.addEventListener("click", function(){ shown += PAGE_SIZE; renderList(); });
   elList.addEventListener("click", onListClick);
 
@@ -770,6 +853,93 @@
   window.addEventListener("resize", onScroll);
   elTop.addEventListener("click", function(){ window.scrollTo({top:0,behavior:"smooth"}); });
   elBottom.addEventListener("click", function(){ window.scrollTo({top:document.documentElement.scrollHeight,behavior:"smooth"}); });
+
+  // ---------- дата / футер ----------
+  function renderDateLine(){
+    if(META){
+      if(META.change_display) elDateFoot.textContent = META.change_display;
+      else if(META.source_date_display) elDateFoot.textContent = "Снимок от " + META.source_date_display;
+      else elDateFoot.textContent = "Дата актуальности не определена";
+    }else{
+      elDateFoot.textContent = "Дата актуальности не определена";
+    }
+    var titleParts=[];
+    if(META && META.standard_line) titleParts.push(META.standard_line);
+    if(META && META.provenance) titleParts.push(META.provenance);
+    elDateFoot.title = titleParts.join(" | ");
+  }
+
+  function mergeSources(metaSources, defaults) {
+    var byUrl = new Map(defaults.map(function(s){ return [s.url, s]; }));
+    if (Array.isArray(metaSources)) {
+      for (var i=0;i<metaSources.length;i++){
+        var s = metaSources[i];
+        if (s && s.url && !byUrl.has(s.url)) byUrl.set(s.url, s);
+      }
+    }
+    return Array.from(byUrl.values());
+  }
+
+  function linkFor(s) {
+    var a = document.createElement('a');
+    a.href = s.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = s.name;
+    a.title = s.name;
+    return a;
+  }
+
+  function renderFooter(){
+    // Статистика из фактического массива (не из меты).
+    var total = RECORDS.length;
+    var secCount = (META && Array.isArray(META.sections)) ? META.sections.length : 0;
+    var s = "В справочнике "+fmtNum(total)+" "+plural(total,["запись","записи","записей"])+
+            " и "+fmtNum(secCount)+" "+plural(secCount,["вид ОФ","вида ОФ","видов ОФ"])+".";
+    elFootLead.innerHTML = escHtml(s).replace(/(\d[\d\u00a0.]*)/g,"<b>$1</b>");
+
+    // Фильтруем источники: Росстандарт (protect.gost.ru) в футер не выводим.
+    var allSources = (META && Array.isArray(META.primary_sources)) ? META.primary_sources : [];
+
+    // classifikators.ru — машиночитаемый снимок, идёт в «Источник данных»,
+    // даже если в мете он помечен role: secondary.
+    var primaryList = allSources.filter(function(x){
+      if (!x || !x.url) return false;
+      if (x.url.indexOf('gost.ru') >= 0) return false;
+      return x.role === 'primary' || x.url.indexOf('classifikators.ru') >= 0;
+    });
+
+    // В «Первоисточники» — всё secondary, кроме Росстандарта и classifikators.
+    var secondaryList = allSources.filter(function(x){
+      if (!x || !x.url) return false;
+      if (x.url.indexOf('gost.ru') >= 0) return false;
+      if (x.url.indexOf('classifikators.ru') >= 0) return false;
+      return x.role === 'secondary';
+    });
+
+    var mergedPrimary = mergeSources(primaryList, DEFAULT_PRIMARY_SOURCES);
+    var mergedSecondary = mergeSources(secondaryList, DEFAULT_SECONDARY_SOURCES);
+
+    elSourcesPrimary.innerHTML = '<span class="cap">Источник данных (машиночитаемый снимок):</span>';
+    mergedPrimary.forEach(function(src){ elSourcesPrimary.appendChild(linkFor(src)); });
+
+    elSourcesSecondary.innerHTML = '<span class="cap">Первоисточники и текстовые редакции для сверки:</span>';
+    mergedSecondary.forEach(function(src){ elSourcesSecondary.appendChild(linkFor(src)); });
+
+    var aboutLink = document.createElement('a');
+    aboutLink.href = 'https://github.com/prog815/okof';
+    aboutLink.target = '_blank';
+    aboutLink.rel = 'noopener noreferrer';
+    aboutLink.textContent = 'О справочнике';
+    aboutLink.title = 'О справочнике (репозиторий проекта)';
+    elSourcesSecondary.appendChild(aboutLink);
+
+    var d = (META && META.disclaimer) ? META.disclaimer
+      : "Материалы носят справочный характер и не являются точными копиями официальных документов. "+
+        "Перед применением в официальных документах сверяйте по первоисточнику (Росстандарт).";
+    d += " ОКОФ не устанавливает амортизационные группы — сроки полезного использования определены отдельно, в ПП РФ № 1 от 01.01.2002.";
+    elFootDisc.textContent = d;
+  }
 
   syncClear();
   loadAll();
