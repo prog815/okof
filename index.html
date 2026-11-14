@@ -1,948 +1,997 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ОКОФ — Общероссийский классификатор основных фондов</title>
-<meta name="description" content="Поиск по ОКОФ: числовой код (с точками и без), наименование, раздел. Плоский справочник основных фондов без дерева. Источник — машиночитаемый снимок классификатора.">
+<title>ОКОФ — Общероссийский классификатор основных фондов | поиск по кодам</title>
+<meta name="description" content="Онлайн-справочник ОКОФ (ОК 013-2014): мгновенный поиск кодов основных фондов по коду (с точками и без) и наименованию. Источник — машиночитаемый снимок классификатора.">
+<link rel="icon" type="image/svg+xml" href="https://prog815.github.io/favicon.svg?v=1.0.0">
 <meta name="theme-color" content="#eef4ee">
-<link rel="icon" type="image/svg+xml" href="https://prog815.github.io/common-menu/favicon.svg?v=1.0.0">
-<style>
-  :root{
-    --bg:#eef4ee; --panel:#ffffff; --text:#1b2e1e; --muted:#5b6e5d;
-    --line:#d3e0d4; --line-strong:#bcd1be;
-    --accent:#4E9450; --accent-weak:#e6f2e7; --accent-text:#2e6b30;
-    --mark:#fff3a3; --danger:#b42318;
-    --shadow:0 1px 2px rgba(20,40,20,.05),0 6px 18px rgba(20,40,20,.05);
-    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
-    --radius:12px;
 
-    /* ОКОФ-специфичные роли */
-    --code:#2e6b30;   --code-bg:#e6f2e7;   --code-fg:#1d4b1f;
-    --norm:#6b7d6b;   --norm-bg:#f0f4f0;   --norm-fg:#3b4e3d;
-    --sec:#7b6fa6;    --sec-bg:#efecf7;    --sec-fg:#53467a;
+<!-- JSON-LD микроразметка -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Общероссийский классификатор основных фондов (ОКОФ)",
+  "description": "Справочный снимок открытых данных (ОК 013-2014 (СНС 2008))",
+  "url": "https://prog815.github.io/okof/",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Экосистема «Классик»",
+    "url": "https://prog815.github.io/"
+  },
+  "author": {
+    "@type": "Person",
+    "sameAs": [
+      "https://m.vk.ru/alekseyenin",
+      "https://t.me/AlekseyEnin",
+      "https://max.ru/channel_prog815",
+      "https://www.linkedin.com/in/eavprog/"
+    ]
   }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-    background:var(--bg); color:var(--text); line-height:1.45;
-    -webkit-text-size-adjust:100%;
-  }
-  a{color:var(--accent-text)}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+}
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script>
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+  ym(105817342, "init", {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/105817342" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SM54ENZHYS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-SM54ENZHYS');
+</script>
+<!-- /Google tag -->
+
+<!-- Общие ассеты хаба -->
+<script src="https://prog815.github.io/share.js?v=1.0.3" defer></script>
+
+<style>
   [hidden]{display:none!important}
 
-  /* header */
-  .hero{padding:18px 0 6px}
-  .hero h1{margin:0 0 4px;font-size:30px;letter-spacing:.2px}
-  .hero p{margin:0;color:var(--muted);font-size:15px;max-width:940px}
-  .hero p b{color:var(--text);font-weight:600}
-  .notice{
-    margin:12px 0 2px;padding:10px 14px;border:1px solid var(--line-strong);
-    border-left:5px solid var(--accent);border-radius:10px;background:var(--panel);
-    color:var(--text);font-size:13.5px;box-shadow:var(--shadow);
+  :root{
+    --bg:#eef4ee; --panel:#ffffff; --ink:#1b2e1e; --muted:#5b6e5d;
+    --line:#d3e0d4; --brand:#2e7d4f; --brand-d:#1d4b1f; --accent:#e6f2e7;
+    --mark:#fef08a; --shadow:0 1px 2px rgba(20,40,20,.05),0 6px 18px rgba(20,40,20,.05);
+    --radius:12px; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    
+    /* Цвета разделов ОКОФ */
+    --sec-bg:#efecf7; --sec-fg:#53467a; --od-bg:#f3e8ff;
   }
-  .notice b{font-weight:600}
-  .notice a{white-space:nowrap}
-  .hints{margin:10px 0 0;color:var(--muted);font-size:13px}
-  .hints .mono{font-family:var(--mono);letter-spacing:.3px}
+  @media(prefers-color-scheme:dark){
+    :root{
+      --bg:#0b1120; --panel:#111a2c; --ink:#e6edf7; --muted:#94a3b8;
+      --line:#1e293b; --brand:#60a5fa; --brand-d:#3b82f6; --accent:rgba(96,165,250,.12);
+      --mark:#854d0e; --shadow:0 1px 2px rgba(0,0,0,.4);
+      --sec-bg:rgba(167,139,250,.15); --sec-fg:#c4b5fd; --od-bg:rgba(167,139,250,.1);
+    }
+  }
 
-  /* search panel */
-  .panel{
-    background:rgba(255,255,255,.92);
-    backdrop-filter:saturate(1.1) blur(6px);
-    border-bottom:1px solid var(--line);padding:12px 0;margin-top:0;
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    -webkit-text-size-adjust:100%;
   }
-  .panel .wrap{display:flex;flex-direction:column;gap:10px}
-  .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .searchbox{position:relative;flex:1 1 340px;min-width:220px}
-  #q{
-    width:100%;padding:11px 38px 11px 13px;border:1px solid var(--line-strong);
-    border-radius:10px;font-size:15px;background:var(--panel);color:var(--text);
-  }
-  #q:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-weak)}
-  #q::-webkit-search-cancel-button{display:none;-webkit-appearance:none}
-  .clear{
-    position:absolute;right:8px;top:50%;transform:translateY(-50%);
-    border:none;background:transparent;color:var(--muted);font-size:18px;line-height:1;
-    cursor:pointer;padding:4px 6px;border-radius:8px;display:none;
-  }
-  .clear:hover{background:var(--accent-weak);color:var(--accent-text)}
-  .searchbox.has-val .clear{display:block}
+  a{color:var(--brand); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 14px}
+  .skip-link{position:absolute;left:-9999px;top:0;background:var(--panel);padding:10px;z-index:100;}
+  .skip-link:focus{left:0;}
 
-  select#section-filter{
-    padding:11px 14px;border:1px solid var(--line-strong);border-radius:10px;
-    font-size:15px;background:var(--panel);color:var(--text);cursor:pointer;
-    flex:0 1 320px; outline:none;
+  /* Баннер хаба */
+  .klassik-banner{display:block;max-width:1200px;margin:0 auto;padding:8px 16px;text-decoration:none;opacity:.9}
+  .klassik-banner:hover{opacity:1}
+  .klassik-banner img{display:block;width:100%;height:auto}
+
+  header.hero{padding:16px 0 6px}
+  h1{font-size:24px;margin:0 0 4px;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin:0 0 12px;font-size:14px}
+
+  /* Панель поиска и фильтров */
+  .search-container{padding:12px 0 8px;}
+  .searchbar{display:flex; gap:8px; align-items:stretch; flex-wrap:wrap;}
+  .searchbar input[type=text]{
+    flex:2; min-width:200px; font-size:16px; padding:12px 16px;
+    border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--panel); color:var(--ink); outline:none;
+    transition:border-color .2s;
   }
-  select#section-filter:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-weak)}
-
-  /* status line */
-  .statusline{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;
-    color:var(--muted);font-size:13px;padding:2px 2px 0}
-  .statusline .found b{color:var(--text)}
-  .reset-link{
-    font-size:13px;color:var(--muted);text-decoration:underline dashed;
-    text-underline-offset:3px;white-space:nowrap;cursor:pointer;transition:color .15s;
+  .searchbar input[type=text]:focus{border-color:var(--brand); box-shadow:0 0 0 3px var(--accent)}
+  
+  .searchbar select {
+    flex:1; min-width:140px; font-size:14px; padding:12px;
+    border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--panel); color:var(--ink); outline:none; cursor:pointer;
   }
-  .reset-link:hover{color:var(--accent-text)}
+  .searchbar select:focus{border-color:var(--brand)}
 
-  /* results */
-  main{padding:14px 0 30px}
-  #state{padding:30px 4px;color:var(--muted);text-align:center}
-  #state.error{color:var(--danger)}
-  #state .retry{margin-top:10px;display:inline-block;padding:9px 14px;border:1px solid var(--line-strong);
-    border-radius:10px;background:var(--panel);color:var(--accent-text);cursor:pointer;font:inherit}
-  #list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-  .empty{padding:26px 4px;color:var(--muted);text-align:center}
+  .meta-line{
+    display:flex; justify-content:space-between; align-items:center;
+    margin:12px 2px 8px; font-size:13px; color:var(--muted);
+  }
+  .meta-line .count b{color:var(--ink)}
+  .meta-line .clear-link{color:var(--muted); text-decoration:underline dashed; cursor:pointer}
+  .meta-line .clear-link:hover{color:var(--brand)}
 
-  /* card */
+  /* ---------- Загрузка ---------- */
+  #status{
+    padding:48px 4px;
+    text-align:center;
+    color:var(--muted);
+    animation:fade-in .25s ease-out;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  #status .spinner{
+    width:46px; height:46px; border-radius:50%;
+    border:3px solid var(--line);
+    border-top-color:var(--brand);
+    margin:0 auto 16px;
+    animation:spin .85s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #status .loading-text{
+    font-size:15px; font-weight:500; color:var(--ink);
+    margin-bottom:6px;
+  }
+  #status .loading-text .dots span{
+    display:inline-block; opacity:0;
+    animation:dot-pulse 1.4s infinite;
+  }
+  #status .loading-text .dots span:nth-child(2){ animation-delay:.2s; }
+  #status .loading-text .dots span:nth-child(3){ animation-delay:.4s; }
+  @keyframes dot-pulse {
+    0%, 60%, 100% { opacity: 0; }
+    30% { opacity: 1; }
+  }
+  #status .substatus{
+    font-size:12px; color:var(--muted);
+    margin-top:4px;
+  }
+  #status .err{color:#e11d48; font-weight:500;}
+
+  #results{display:flex; flex-direction:column; gap:12px; padding-bottom:8px}
+
   .card{
-    background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);
-    border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); padding:16px;
+    box-shadow:var(--shadow); position:relative;
+    transition:border-color .2s;
+    border-left: 5px solid var(--brand);
   }
-  .card.highlight{outline:3px solid var(--accent);outline-offset:2px}
-  .card-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .code,.code-norm{
-    font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.4px;
-    border:1px solid transparent;border-radius:8px;padding:4px 9px;cursor:pointer;white-space:nowrap;
-    transition:border-color .15s, background .15s;
+  .card:hover{border-color:var(--brand)}
+  .card.highlight{border-color:var(--brand); box-shadow:0 0 0 2px var(--accent), var(--shadow)}
+
+  .row1{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; align-items:flex-start; margin-bottom:12px}
+
+  .code-btn {
+    appearance:none; border:1px solid var(--line); background:var(--accent);
+    color:var(--brand-d); font-family:var(--mono); font-weight:700; font-size:1.05rem;
+    padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap;
+    transition: background .15s;
   }
-  .code{background:var(--code-bg);color:var(--code-fg);font-size:15px}
-  .code:hover{border-color:var(--code);background:#d9ebd9}
-  .code-norm{background:var(--norm-bg);color:var(--norm-fg);font-size:13px;font-weight:500}
-  .code-norm:hover{border-color:var(--norm);background:#e2ece2}
-
-  .badge-sec{
-    font:inherit;font-size:12px;border-radius:999px;padding:4px 10px;cursor:pointer;
-    border:1px solid transparent;white-space:nowrap;
-    background:var(--sec-bg);color:var(--sec-fg);
-    transition:border-color .15s, background .15s;
+  .code-btn:hover { background:#dbeafe; border-color:var(--brand); }
+  
+  .code-btn.norm {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    background: #f0f4f0;
+    color: var(--muted);
   }
-  .badge-sec:hover{border-color:var(--sec);background:#e2daf2}
+  .code-btn.norm:hover { background: #e2ece2; border-color: var(--muted); }
 
-  .card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto;align-items:center}
-  .btn-small{
-    display:inline-flex;align-items:center;gap:4px;
-    border:1px dashed var(--line-strong);background:#fbfcfe;color:var(--muted);
-    border-radius:8px;padding:4px 9px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap;
-    transition:background .15s, border-color .15s;
+  /* Бейджи */
+  .badges { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; align-items:center; }
+  .badge { display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:0.75rem; font-weight:600; border:1px solid transparent; white-space:nowrap; }
+  
+  .badge.sec { background: var(--sec-bg); color: var(--sec-fg); cursor:pointer; transition: filter .15s; }
+  .badge.sec:hover { filter:brightness(0.95); }
+
+  .name{
+    font-size:18px; font-weight:600; line-height:1.4; margin-bottom:8px; color:var(--ink);
   }
-  .btn-small:hover{border-color:var(--accent);color:var(--accent-text);background:var(--accent-weak)}
+  
+  mark { background:var(--mark); color:inherit; border-radius:2px; padding:0 1px; }
 
-  .name{margin-top:9px;font-size:15.5px;font-weight:650;word-break:break-word}
-  mark{background:var(--mark);border-radius:3px;padding:0 1px;color:inherit}
-
-  .more{display:flex;justify-content:center;margin:16px 0 4px}
-  .more button{
-    padding:11px 18px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);
-    color:var(--accent-text);font:inherit;font-size:14px;cursor:pointer;box-shadow:var(--shadow);
+  .actions{
+    display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+    padding-top:12px; border-top:1px dashed var(--line);
   }
-  .more button:hover{border-color:var(--accent);background:var(--accent-weak)}
-  .more button:disabled{opacity:.5;cursor:default}
-
-  /* footer */
-  footer{border-top:1px solid var(--line);background:var(--panel)}
-  footer .wrap{padding:18px 16px 30px;color:var(--muted);font-size:14px}
-  footer h4{margin:0 0 8px;color:var(--text);font-size:15px}
-  footer .lead{margin:0 0 4px;color:var(--text)}
-  footer .lead b{font-weight:600}
-  .date-line{color:var(--muted);font-size:13px;margin:0 0 12px}
-  .sources{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-  .sources-row{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
-  .sources-row .cap{color:var(--muted)}
-  .sources-row a{white-space:nowrap;text-decoration:none;border-bottom:1px solid transparent}
-  .sources-row a:hover{border-bottom-color:var(--accent)}
-  footer .disc{margin:0;font-size:13px;color:#6b7385;line-height:1.5}
-
-  /* floating buttons + toast */
-  .fab{position:fixed;right:16px;display:flex;flex-direction:column;gap:8px;z-index:40}
-  .fab.up{bottom:74px}.fab.down{bottom:16px}
-  .fab button{
-    width:42px;height:42px;border-radius:50%;border:1px solid var(--line-strong);background:var(--panel);
-    color:var(--accent-text);font-size:18px;cursor:pointer;box-shadow:var(--shadow);display:none;
+  .action-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:500; color:var(--muted);
+    background:transparent; border:1px solid transparent;
+    border-radius:6px; padding:4px 8px; cursor:pointer;
+    transition:all .2s; font-family:inherit;
   }
-  .fab button:hover{background:var(--accent-weak);border-color:var(--accent)}
+  .action-btn:hover{background:var(--accent); color:var(--brand-d); border-color:var(--accent)}
+
+  .share-slot{display:inline-flex}
+  .share-slot klassik-share { display: inline-flex; align-items: center; }
+
+  .more{
+    display:block; width:100%; margin:16px 0; padding:14px;
+    font-size:14px; font-weight:600; border:1px solid var(--line);
+    border-radius:var(--radius); background:var(--panel);
+    color:var(--brand); cursor:pointer;
+  }
+  .more:hover{border-color:var(--brand); background:var(--accent)}
+  .more[hidden]{display:none!important}
+
+  footer{margin:40px 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+  footer .stats{margin:0 0 4px; font-weight:500; color:var(--ink)}
+  footer .date-line{margin:0 0 16px; font-size:12px}
+  footer .links{display:flex; flex-direction:column; gap:12px}
+  footer .row-label{font-size:12px; color:var(--muted); margin-bottom:2px}
+  footer a{color:var(--brand)}
+
+  footer .disc{
+    font-size:12px; margin-top:16px; line-height:1.5;
+    background:var(--od-bg); border:1px solid rgba(124,58,237,.2);
+    border-radius:10px; padding:12px 14px; color:var(--ink);
+  }
+
+  .fab{
+    position:fixed; right:20px; width:44px; height:44px; border-radius:50%;
+    border:1px solid var(--line); background:var(--panel); color:var(--brand-d);
+    font-size:20px; cursor:pointer; box-shadow:var(--shadow);
+    display:none; align-items:center; justify-content:center; z-index:40;
+  }
+  .fab.up{bottom:80px} .fab.down{bottom:24px} .fab.show{display:flex}
+
   .toast{
-    position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
-    background:#1b2e1e;color:#e8f0f7;padding:10px 16px;border-radius:10px;font-size:14px;
-    box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:60;
-    max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:99px;
+    font-size:13px; font-weight:500; opacity:0; pointer-events:none;
+    transition:opacity .2s, transform .2s; z-index:60;
   }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
-  @media (max-width:640px){
-    .hero h1{font-size:25px}
-    .row1{flex-direction:column;align-items:stretch}
-    .row1>*{width:100%}
-    .searchbox{flex:auto}
-    select#section-filter{width:100%;flex:auto}
-    .statusline{flex-direction:column;gap:2px;align-items:flex-start}
-    .reset-link{margin-top:4px}
-    .card-top{flex-direction:column;align-items:stretch}
-    .card-actions{margin-left:0;justify-content:flex-start}
-    .btn-small{justify-content:center}
+  .noscript-msg {
+    background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffeeba;
+  }
+
+  @media(max-width:640px){
+    .klassik-banner{padding:4px 8px}
+    .wrap{padding:0 12px}
+    .name{font-size:16px}
+    .searchbar input[type=text], .searchbar select { width: 100%; flex: 1 1 100%; }
+    .row1 { flex-direction: column; }
+    .badges { justify-content: flex-start; margin-top: 8px; }
   }
 </style>
 </head>
 <body>
-<script src="https://prog815.github.io/common-menu/menu.js?v=3.0.0"></script>
-<common-projects-menu></common-projects-menu>
 
-<script src="https://prog815.github.io/common-menu/share.js?v=1.0.0"></script>
+<a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
-<div class="wrap hero">
-  <h1>ОКОФ</h1>
-  <p>Общероссийский классификатор основных фондов.
-     Поиск по <b>числовому коду</b> (с точками и без) и <b>наименованию</b>.
-     Плоский справочник с группировкой по <b>22 видам ОФ</b>.</p>
+<!-- Ссылка на центральный хаб -->
+<a class="klassik-banner" href="https://prog815.github.io/" title="На главную — все справочники">
+  <img src="https://prog815.github.io/banner.svg?v=1.0.0" alt="Экосистема «Классик» — все справочники">
+</a>
 
-  <div class="notice">
-    <b>ОКОФ — это код основного средства.</b>
-    Для поиска по видам экономической деятельности используйте
-    <a href="https://prog815.github.io/okved2/" rel="noopener" target="_blank">ОКВЭД2</a>,
-    для поиска по продукции —
-    <a href="https://prog815.github.io/okpd2/" rel="noopener" target="_blank">ОКПД2</a>.
-    Амортизационные группы определяются отдельно, по ПП РФ № 1 от 01.01.2002.
-  </div>
+<div class="wrap" id="main-content">
+  <header class="hero">
+    <h1>📦 ОКОФ — Общероссийский классификатор основных фондов</h1>
+    <p class="sub">Мгновенный поиск по кодам (с точками и без) и наименованиям. Плоский справочник с группировкой по 22 видам ОФ (ОК 013-2014).</p>
+  </header>
 
-  <div class="hints">
-    Форматы запроса: <span class="mono">100.00.00.00</span> ·
-    <span class="mono">100000000</span> ·
-    слово из наименования.
-  </div>
-</div>
+  <noscript>
+    <div class="noscript-msg">
+      Для работы поиска и отображения карточек необходим JavaScript.
+      Вы можете ознакомиться с официальным первоисточником по ссылке в футере сайта.
+    </div>
+  </noscript>
 
-<div class="panel" id="panel">
-  <div class="wrap">
-    <div class="row1">
-      <div class="searchbox" id="searchbox">
-        <input id="q" type="text" autocomplete="off" spellcheck="false"
-               placeholder="Код (с точками или без) или название"
-               aria-label="Поиск по ОКОФ">
-        <button class="clear" id="clear" type="button" title="Очистить запрос" aria-label="Очистить запрос">✕</button>
-      </div>
-      <select id="section-filter" aria-label="Фильтр по разделу">
+  <div class="search-container">
+    <div class="searchbar">
+      <input id="q" type="text" autocomplete="off" spellcheck="false" 
+             placeholder="Код (100.00.00.00 или 100000000) или слово" 
+             title="Поиск по коду (с точками или без) или названию">
+      
+      <select id="sec-filter" title="Фильтр по разделу">
         <option value="">Все виды ОФ</option>
       </select>
     </div>
-    <div class="statusline">
-      <div class="found" id="found">Загрузка…</div>
-      <a href="#" id="resetFilters" class="reset-link" title="Очистить запрос и фильтр">Очистить</a>
-    </div>
   </div>
+
+  <div class="meta-line">
+    <div class="count" id="count">Загрузка...</div>
+    <div class="clear-link" id="clear-all" style="display:none" title="Сбросить поиск и фильтры">Очистить поиск</div>
+  </div>
+
+  <!-- Загрузка: спиннер + анимация -->
+  <div id="status">
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="loading-text">
+      <span id="loading-text">Загрузка справочника ОКОФ</span><span class="dots"><span>.</span><span>.</span><span>.</span></span>
+    </div>
+    <div class="substatus">Файл ~45 КБ. Обычно 1–2 секунды.</div>
+  </div>
+
+  <div id="results"></div>
+
+  <button class="more" id="more" hidden>Показать ещё</button>
+
+  <footer>
+    <p class="stats" id="footstats">Загрузка статистики...</p>
+    <p class="date-line" id="footdate">Дата актуальности: не определена</p>
+
+    <div class="links">
+      <div id="foot-primary">
+        <div class="row-label">Источник данных (машиночитаемый снимок):</div>
+      </div>
+      <div id="foot-secondary">
+        <div class="row-label">Первоисточники и текстовые редакции для сверки:</div>
+      </div>
+      <div>
+        <div class="row-label">Экосистема проектов:</div>
+        <a href="https://prog815.github.io/" target="_blank" rel="noopener">Центральный хаб «Классик»</a>
+      </div>
+      <div>
+        <div class="row-label">Обсуждение проекта и обратная связь:</div>
+        <a href="https://m.vk.ru/alekseyenin" target="_blank" rel="me noopener">ВКонтакте</a> ·
+        <a href="https://t.me/AlekseyEnin" target="_blank" rel="me noopener">Telegram</a> ·
+        <a href="https://max.ru/channel_prog815" target="_blank" rel="me noopener">MAX</a> ·
+        <a href="https://www.linkedin.com/in/eavprog/" target="_blank" rel="me noopener">LinkedIn</a>
+      </div>
+    </div>
+
+    <p class="disc">
+      Справочник носит справочный характер, не заменяет первоисточник и не является официальным реестром.
+      Данные обновляются автоматически раз в неделю. ОКОФ не устанавливает амортизационные группы — сроки полезного использования определены отдельно, в ПП РФ № 1 от 01.01.2002.
+    </p>
+  </footer>
 </div>
 
-<main class="wrap">
-  <div id="listView">
-    <div id="state">Загрузка данных справочника…</div>
-    <ul id="list" hidden></ul>
-    <div class="more" id="moreWrap" hidden>
-      <button id="more" type="button">Показать ещё</button>
-    </div>
-  </div>
-</main>
-
-<footer>
-  <div class="wrap">
-    <h4>О справочнике</h4>
-    <p class="lead" id="footLead"></p>
-    <div class="date-line" id="dateLineFoot"></div>
-    <div class="sources">
-      <div class="sources-row" id="sourcesPrimary"></div>
-      <div class="sources-row" id="sourcesSecondary"></div>
-    </div>
-    <p class="disc" id="footDisc"></p>
-  </div>
-</footer>
-
-<div class="fab up"><button id="toTop" type="button" title="Наверх" aria-label="Наверх">↑</button></div>
-<div class="fab down"><button id="toBottom" type="button" title="Вниз" aria-label="Вниз">↓</button></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="fab up" id="fabUp" title="Прокрутить страницу наверх">↑</button>
+<button class="fab down" id="fabDown" title="Прокрутить страницу вниз">↓</button>
+<div class="toast" id="toast">Скопировано</div>
 
 <script>
 (function(){
   "use strict";
 
-  // ---------- конфигурация ----------
-  var BASE = location.href.replace(/[^/]*$/,"");
-  var DATA_GZ  = BASE + "okof.json.gz";
-  var DATA_JSON= BASE + "okof.json";
-  var META_GZ  = BASE + "okof_meta.json.gz";
-  var META_JSON= BASE + "okof_meta.json";
-
-  var PAGE_SIZE = 20;
-  var DEBOUNCE_MS = 180;
-  var SCROLL_THRESHOLD = 300;
-  var EMPTY_PQ = {digits:"", tokens:[], rawTerms:[], full:"", isCodeOnly:false};
-
-  // формат веб-записи ОКОФ:
-  // [code, codeNorm, name, section]
-  var F_CODE=0, F_NORM=1, F_NAME=2, F_SEC=3;
-
-  // В футере:
-  //   «Источник данных (машиночитаемый снимок)» → classifikators.ru
-  //   «Первоисточники и текстовые редакции для сверки» → Консультант/Гарант/Кодекс + О справочнике
-  // Росстандарт (protect.gost.ru) и ПП № 1 (амортизационные группы) в футер не выводим.
-  var DEFAULT_PRIMARY_SOURCES = [
-    { name: 'classifikators.ru — ОКОФ', url: 'https://classifikators.ru/okof', role: 'primary' }
-  ];
-  var DEFAULT_SECONDARY_SOURCES = [
-    { name: 'КонсультантПлюс', url: 'https://www.consultant.ru/document/cons_doc_LAW_184368/', role: 'secondary' },
-    { name: 'Гарант', url: 'https://internet.garant.ru/#/document/71153994', role: 'secondary' },
-    { name: 'Кодекс', url: 'https://docs.cntd.ru/document/1200121648', role: 'secondary' }
-  ];
-
-  // ---------- состояние ----------
-  var RECORDS = [];
-  var BY_NORM = {};
-  var filtered = [];
-  var shown = PAGE_SIZE;
+  var PAGE = 20;
+  var DATA = [];
   var META = null;
   var activeDeepLinkCode = null;
+  var view = { list: [], shown: 0 };
+  var loadingInterval = null;
 
-  // ---------- dom ----------
-  var $ = function(id){return document.getElementById(id);};
-  var elState=$("state"), elList=$("list"), elMoreWrap=$("moreWrap"), elMore=$("more");
-  var elQ=$("q"), elClear=$("clear"), elBox=$("searchbox"), elSec=$("section-filter"),
-      elFound=$("found"), elDateFoot=$("dateLineFoot"),
-      elFootLead=$("footLead"),
-      elFootDisc=$("footDisc"), elToast=$("toast"),
-      elTop=$("toTop"), elBottom=$("toBottom"),
-      elSourcesPrimary=$("sourcesPrimary"), elSourcesSecondary=$("sourcesSecondary"),
-      elReset=$("resetFilters");
+  var DEFAULT_PRIMARY_SOURCES = [
+    { name: "classifikators.ru — ОКОФ", url: "https://classifikators.ru/okof", role: "primary" }
+  ];
+  var DEFAULT_SECONDARY_SOURCES = [
+    { name: "КонсультантПлюс", url: "https://www.consultant.ru/document/cons_doc_LAW_184368/", role: "secondary" },
+    { name: "Гарант", url: "https://internet.garant.ru/#/document/71153994", role: "secondary" },
+    { name: "Кодекс", url: "https://docs.cntd.ru/document/1200121648", role: "secondary" }
+  ];
 
-  // ---------- утилиты ----------
-  function norm(s){
-    s = String(s==null?"":s).toLowerCase().replace(/ё/g,"е");
-    s = s.replace(/[^\p{L}\p{N}]+/gu," ");
-    s = s.replace(/\s+/g," ").trim();
-    return s;
+  var els = {
+    q: document.getElementById('q'),
+    sec: document.getElementById('sec-filter'),
+    clearAll: document.getElementById('clear-all'),
+    count: document.getElementById('count'),
+    status: document.getElementById('status'),
+    loadingText: document.getElementById('loading-text'),
+    results: document.getElementById('results'),
+    more: document.getElementById('more'),
+    footstats: document.getElementById('footstats'),
+    footdate: document.getElementById('footdate'),
+    footPrimary: document.getElementById('foot-primary'),
+    footSecondary: document.getElementById('foot-secondary'),
+    fabUp: document.getElementById('fabUp'),
+    fabDown: document.getElementById('fabDown'),
+    toast: document.getElementById('toast')
+  };
+
+  var LOADING_PHASES = [
+    'Загрузка справочника ОКОФ',
+    'Распаковка 45 КБ данных',
+    'Подготовка списка объектов'
+  ];
+  var loadingIdx = 0;
+
+  function startLoadingTicker() {
+    stopLoadingTicker();
+    loadingInterval = setInterval(function(){
+      if (!els.loadingText || !els.loadingText.isConnected) { stopLoadingTicker(); return; }
+      loadingIdx = (loadingIdx + 1) % LOADING_PHASES.length;
+      els.loadingText.textContent = LOADING_PHASES[loadingIdx];
+    }, 1500);
   }
-  function escHtml(s){
-    return String(s==null?"":s).replace(/[&<>"']/g,function(c){
-      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  function stopLoadingTicker() {
+    if (loadingInterval) { clearInterval(loadingInterval); loadingInterval = null; }
+  }
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-  function escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }
-  function fmtNum(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"\u00a0"); }
-  function plural(n,forms){
-    var n10=n%10, n100=n%100;
-    if(n10===1 && n100!==11) return forms[0];
-    if(n10>=2 && n10<=4 && (n100<10||n100>=20)) return forms[1];
-    return forms[2];
-  }
+  function escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function normName(s){ return String(s == null ? '' : s).toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim(); }
+  function fmt(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0'); }
 
-  // Нормализация ?code= на входе: принимаем и «210.00.11.10.110», и «210001110110».
-  function normalizeCodeQuery(raw){
-    return String(raw==null?"":raw).replace(/\D/g,"");
-  }
-
-  function commonPrefixOk(a,b){
-    var max = Math.min(5, a.length, b.length);
-    if(max < 4) return false;
-    return a.slice(0,max) === b.slice(0,max);
-  }
-
-  function extractWords(text){
-    var n = norm(text);
-    return n ? n.split(" ").filter(Boolean) : [];
-  }
-
-  // ---------- загрузка ----------
-  async function fetchJson(gzUrl, jsonUrl){
-    try{
-      if (typeof DecompressionStream === "function"){
-        var r = await fetch(gzUrl,{cache:"no-store"});
-        if (r.ok){
-          var ds = new DecompressionStream("gzip");
-          var decompressed = r.body.pipeThrough(ds);
-          var text = await new Response(decompressed).text();
-          return JSON.parse(text);
-        }
-      }
-    }catch(e){ /* fallback */ }
-    var r2 = await fetch(jsonUrl,{cache:"no-store"});
-    if(!r2.ok) throw new Error("не удалось получить файл, код ответа "+r2.status);
-    return await r2.json();
-  }
-
-  async function loadAll(){
-    elState.hidden=false; elState.className=""; elState.textContent="Загрузка данных справочника…";
-    elList.hidden=true; elList.innerHTML=""; elMoreWrap.hidden=true; elMore.textContent="";
-    elFound.textContent="Загрузка…"; elDateFoot.textContent="";
-
-    var data, meta=null;
-    try{
-      data = await fetchJson(DATA_GZ, DATA_JSON);
-    }catch(err){
-      elState.className="error";
-      elState.innerHTML = "Не удалось загрузить данные справочника.<br>"+
-        "<small>"+escHtml(err&&err.message||err)+"</small><br>"+
-        '<button class="retry" id="retryBtn" type="button">Повторить</button>';
-      var rb=$("retryBtn"); if(rb) rb.addEventListener("click", loadAll);
-      return;
+  function highlight(text, tokens) {
+    if (!tokens || !tokens.length || !text) return esc(text);
+    var html = esc(text);
+    var sortedTokens = tokens.slice().sort(function(a,b){ return b.length - a.length; });
+    for (var i=0; i<sortedTokens.length; i++) {
+      var t = sortedTokens[i];
+      if (!t) continue;
+      var re = new RegExp('(' + escRe(t) + ')', 'gi');
+      html = html.replace(re, '<mark>$1</mark>');
     }
-    try{ meta = await fetchJson(META_GZ, META_JSON); }catch(e){ meta=null; }
-
-    META = meta;
-    initSectionFilter();
-    buildIndexes(data);
-    renderFooter();
-    renderDateLine();
-    parseUrlAndApply();
+    return html;
   }
 
-  // ---------- фильтр по 22 видам ОФ ----------
-  function initSectionFilter(){
-    elSec.innerHTML = '<option value="">Все виды ОФ</option>';
+  async function loadJsonGz(url){
+    var r = await fetch(url, { cache: 'no-store' });
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    if(typeof DecompressionStream === 'undefined') throw new Error('DecompressionStream не поддерживается браузером');
+    var decompressed = r.body.pipeThrough(new DecompressionStream('gzip'));
+    var text = await new Response(decompressed).text();
+    return JSON.parse(text);
+  }
+
+  function syncCodeToUrl(code) {
+    var url = new URL(window.location);
+    if (code) url.searchParams.set('code', code);
+    else url.searchParams.delete('code');
+    history.replaceState(null, '', url.toString());
+  }
+
+  function clearCodeFromUrl() { syncCodeToUrl(null); }
+
+  function updateClearVisibility() {
+    var hasQuery = String(els.q.value || '').length > 0;
+    var hasCode = !!activeDeepLinkCode;
+    var hasSec = els.sec.value !== '';
+    els.clearAll.style.display = (hasQuery || hasCode || hasSec) ? 'block' : 'none';
+  }
+
+  function populateSections() {
+    // Собираем разделы прямо из данных
+    var counts = {};
+    DATA.forEach(function(r) {
+      if (r.sec) counts[r.sec] = (counts[r.sec] || 0) + 1;
+    });
+
+    var keys = Object.keys(counts).sort();
+    
+    // Получаем названия разделов из META
+    var metaSections = {};
     if (META && Array.isArray(META.sections)) {
-      META.sections.forEach(function(sec){
-        var opt = document.createElement("option");
-        opt.value = sec.section;
-        opt.textContent = sec.section + " — " + sec.name + " (" + sec.count + ")";
-        elSec.appendChild(opt);
-      });
+      META.sections.forEach(function(s) { metaSections[s.section] = s.name; });
     }
-  }
 
-  // ---------- построение индексов ----------
-  function buildIndexes(arr){
-    RECORDS = []; BY_NORM = {};
-    if(!Array.isArray(arr)) arr=[];
-
-    for(var i=0;i<arr.length;i++){
-      var it = arr[i]||[];
-      var code = String(it[F_CODE]==null?"":it[F_CODE]).trim();
-      var codeNorm = String(it[F_NORM]==null?"":it[F_NORM]).trim();
-      if(!code || !codeNorm) continue;
-
-      var name = String(it[F_NAME]==null?"":it[F_NAME]).trim();
-      var section = String(it[F_SEC]==null?"":it[F_SEC]).trim();
-
-      var nName = norm(name);
-      var words = extractWords(name);
-
-      var rec = {
-        code: code,
-        codeNorm: codeNorm,
-        name: name,
-        section: section,
-        nName: nName,
-        words: words,
-        searchBlob: norm(code + " " + codeNorm + " " + name)
-      };
-
-      RECORDS.push(rec);
-      BY_NORM[codeNorm] = rec;
+    var currentVal = els.sec.value;
+    while (els.sec.options.length > 1) {
+      els.sec.remove(1);
     }
-  }
-
-  // ---------- поиск ----------
-  function prepareQuery(q){
-    var raw = String(q||"");
-    var digits = raw.replace(/[^0-9]/g,"");
-    var n = norm(raw);
-    var tokens = n ? n.split(" ").filter(Boolean) : [];
-    var rawTerms = raw.trim().split(/\s+/).filter(Boolean);
-    // «Только код» = все токены — цифры, точки и/или пробелы
-    var isCodeOnly = rawTerms.length > 0 && rawTerms.every(function(t){
-      return /^[\d\s\.]+$/.test(t);
+    keys.forEach(function(k){
+      var secName = metaSections[k] || 'Раздел ' + k;
+      var opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = k + " — " + secName + " (" + counts[k] + ")";
+      opt.title = secName;
+      els.sec.appendChild(opt);
     });
-    return {digits:digits, tokens:tokens, rawTerms:rawTerms, full:tokens.join(" "), isCodeOnly:isCodeOnly};
+    if (currentVal) els.sec.value = currentVal;
   }
 
-  function tokenMatches(token, rec){
-    if(!token) return true;
-    if(rec.searchBlob.indexOf(token) >= 0) return true;
+  async function boot(){
+    try{
+      startLoadingTicker();
 
-    var words = rec.words || [];
-    for(var i=0;i<words.length;i++){
-      if(commonPrefixOk(token, words[i])) return true;
+      var base = location.pathname.replace(/index\.html$/, '');
+      if(base.charAt(base.length - 1) !== '/') base += '/';
+
+      var raw = await loadJsonGz(base + 'okof.json.gz');
+      META = await loadJsonGz(base + 'okof_meta.json.gz');
+
+      if(!Array.isArray(raw)) throw new Error('bad data shape');
+
+      // [code, codeNorm, name, section]
+      DATA = raw.map(function(it, idx) {
+        var c = String(it[0] || '');
+        var cNorm = String(it[1] || '');
+        var n = String(it[2] || '');
+        var sec = String(it[3] || '');
+        
+        var nName = normName(n);
+        var words = nName.split(' ').filter(Boolean);
+
+        return {
+          code: c,
+          codeNorm: cNorm,
+          name: n,
+          sec: sec,
+          nName: nName,
+          words: words,
+          sourceOrder: idx
+        };
+      });
+
+      populateSections();
+      renderFooter();
+
+      stopLoadingTicker();
+      els.status.style.display = 'none';
+
+      var urlParams = new URLSearchParams(window.location.search);
+      var codeParam = urlParams.get('code');
+      var secParam = urlParams.get('section');
+
+      if (secParam) els.sec.value = secParam;
+
+      if (codeParam) {
+        var cleanCode = codeParam.replace(/\D/g, '');
+        var found = DATA.find(function(r) { return r.codeNorm === cleanCode; });
+        activeDeepLinkCode = found ? cleanCode : null;
+        els.q.value = codeParam;
+      }
+
+      runSearch();
+      if (activeDeepLinkCode) {
+        setTimeout(function(){
+          var el = document.querySelector('.card[data-code="' + activeDeepLinkCode + '"]');
+          if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+        }, 100);
+      }
+    }catch(err){
+      console.error(err);
+      stopLoadingTicker();
+      els.status.innerHTML = '<div class="err">Не удалось загрузить данные.<br><small>' + esc(err.message) + '</small></div>' +
+        '<div style="margin-top:12px"><button class="action-btn" onclick="location.reload()">Повторить</button></div>';
+    }
+  }
+
+  function prepareQuery(q) {
+    var raw = String(q||'').trim();
+    var digits = raw.replace(/[^0-9]/g,'');
+    var n = normName(raw);
+    var tokens = n ? n.split(' ').filter(Boolean) : [];
+    var isCodeOnly = raw.length > 0 && /^[\d\s\.]+$/.test(raw);
+    return { digits: digits, tokens: tokens, full: tokens.join(' '), isCodeOnly: isCodeOnly, raw: raw };
+  }
+
+  function tokenMatches(token, rec) {
+    if(!token) return true;
+    if(rec.nName.indexOf(token) >= 0) return true;
+    for(var i=0; i<rec.words.length; i++){
+      if(rec.words[i].indexOf(token) === 0) return true;
     }
     return false;
   }
 
-  function scoreRecord(r, pq){
-    // Строго префиксный поиск, если запрос состоит только из цифр/точек/пробелов.
-    if(pq.isCodeOnly && pq.digits){
-      if(r.codeNorm === pq.digits) return 100;
-      if(r.codeNorm.indexOf(pq.digits) === 0) return 75;
-      var qRaw = pq.rawTerms.join("");
-      if(r.code.indexOf(qRaw) === 0) return 75;
-      return null; // вхождения в середину кода игнорируются
+  function scoreRecord(r, pq) {
+    // Строго префиксный поиск по коду
+    if (pq.isCodeOnly && pq.digits) {
+      if (r.codeNorm === pq.digits) return 100;
+      if (r.codeNorm.indexOf(pq.digits) === 0) return 75;
+      var rawQuery = pq.raw.replace(/\s/g,'');
+      if (r.code.indexOf(rawQuery) === 0) return 75;
+      return null;
     }
 
     var score = 0;
-
-    if(pq.digits){
-      if(r.codeNorm === pq.digits) score += 100;
-      else if(r.codeNorm.indexOf(pq.digits) === 0) score += 75;
+    if (pq.digits) {
+      if (r.codeNorm === pq.digits) score += 100;
+      else if (r.codeNorm.indexOf(pq.digits) === 0) score += 75;
     }
 
-    if(pq.tokens.length){
-      for(var ti=0; ti<pq.tokens.length; ti++){
-        if(!tokenMatches(pq.tokens[ti], r)) return null;
+    if (pq.tokens.length) {
+      for (var i=0; i<pq.tokens.length; i++) {
+        if (!tokenMatches(pq.tokens[i], r)) return null;
       }
     }
 
-    if(pq.full){
-      if(r.nName === pq.full) score += 60;
-      else if(r.nName.indexOf(pq.full) === 0) score += 50;
-      else if(r.nName.indexOf(pq.full) >= 0) score += 35;
+    if (pq.full) {
+      if (r.nName === pq.full) score += 60;
+      else if (r.nName.indexOf(pq.full) === 0) score += 50;
+      else if (r.nName.indexOf(pq.full) >= 0) score += 35;
     }
 
-    for(var k=0;k<pq.tokens.length;k++){
+    for (var k=0; k<pq.tokens.length; k++) {
       var t = pq.tokens[k];
-      if(r.nName.indexOf(t) >= 0) score += 5;
-      if(r.codeNorm.indexOf(t) >= 0) score += 2;
+      if (r.nName.indexOf(t) >= 0) score += 5;
+      if (r.codeNorm.indexOf(t) >= 0) score += 2;
     }
 
-    if(score <= 0) return null;
-    return score;
+    return score > 0 ? score : null;
   }
 
-  function applyFilters(){
-    var pq = prepareQuery(elQ.value);
-    var hasQuery = !!(pq.digits || pq.tokens.length);
-    var secFilter = elSec.value;
-
-    if(activeDeepLinkCode){
-      var match = BY_NORM[activeDeepLinkCode];
-      filtered = match ? [match] : [];
-    }else{
-      var base = RECORDS.filter(function(r){
-        if (secFilter && r.section !== secFilter) return false;
-        return true;
-      });
-
-      if(hasQuery){
-        var scored=[];
-        for(var a=0;a<base.length;a++){
-          var s = scoreRecord(base[a], pq);
-          if(s!==null) scored.push({r:base[a], s:s});
-        }
-        scored.sort(function(x,y){
-          if(y.s !== x.s) return y.s - x.s;
-          return x.r.codeNorm < y.r.codeNorm ? -1 : x.r.codeNorm > y.r.codeNorm ? 1 : 0;
-        });
-        filtered = scored.map(function(o){return o.r;});
-      }else{
-        filtered = base;
-      }
-    }
-
-    filtered._pq = pq;
-    filtered._hasQuery = hasQuery;
-
-    shown = PAGE_SIZE;
-    renderList();
-  }
-
-  // ---------- рендер списка ----------
-  function renderList(){
-    var pq = filtered._pq || EMPTY_PQ;
-    var terms = pq.rawTerms || [];
-    var digits = pq.digits || "";
-    var total = filtered.length;
-
-    if(total===0){
-      elList.hidden=true; elList.innerHTML="";
-      elState.hidden=false; elState.className="";
-      elState.innerHTML = '<div class="empty">Ничего не найдено. Попробуйте сократить запрос.</div>';
-      elFound.innerHTML = "Найдено: <b>0</b>";
-      elMore.textContent=""; elMoreWrap.hidden=true;
+  function runSearch(){
+    if (activeDeepLinkCode) {
+      var one = DATA.find(function(r){ return r.codeNorm === activeDeepLinkCode; });
+      view.list = one ? [one] : [];
+      view.shown = 0;
+      els.results.innerHTML = '';
+      renderCount();
+      renderMore();
+      appendPage();
+      updateClearVisibility();
       return;
     }
 
-    var visible = Math.min(shown, total);
-    elFound.innerHTML = "Найдено: <b>"+fmtNum(total)+"</b> · Показано: <b>"+fmtNum(visible)+"</b>";
+    var rawQuery = els.q.value;
+    var pq = prepareQuery(rawQuery);
+    var secFilter = els.sec.value;
 
-    elState.hidden=true; elList.hidden=false;
-    var frag = document.createDocumentFragment();
-    var slice = filtered.slice(0, shown);
-    for(var j=0;j<slice.length;j++) frag.appendChild(buildCard(slice[j], terms, digits));
-    elList.innerHTML=""; elList.appendChild(frag);
+    var pool = DATA;
 
-    if(visible < total){
-      var next = Math.min(shown+PAGE_SIZE, total);
-      elMore.textContent = "Показать ещё +"+fmtNum(next-visible)+" (показано "+fmtNum(visible)+" из "+fmtNum(total)+")";
-      elMore.disabled=false;
-      elMoreWrap.hidden=false;
-    }else{
-      elMore.textContent="";
-      elMoreWrap.hidden=true;
+    if (secFilter) pool = pool.filter(function(r) { return r.sec === secFilter; });
+
+    if (pq.isCodeOnly && pq.digits) {
+      var scored = [];
+      for(var i=0; i<pool.length; i++){
+        var s = scoreRecord(pool[i], pq);
+        if(s !== null) scored.push({r: pool[i], s: s});
+      }
+      scored.sort(function(x,y){
+        if(y.s !== x.s) return y.s - x.s;
+        return x.r.codeNorm < y.r.codeNorm ? -1 : x.r.codeNorm > y.r.codeNorm ? 1 : 0;
+      });
+      pool = scored.map(function(o){ return o.r; });
+    } else if (pq.tokens.length > 0) {
+      pool = pool.filter(function(r){
+        return scoreRecord(r, pq) !== null;
+      });
     }
 
-    bindShareButtons();
+    view.list = pool;
+    view.shown = 0;
+    els.results.innerHTML = '';
+    renderCount();
+    renderMore();
+    appendPage();
+    updateClearVisibility();
   }
 
-  // ---------- share ----------
-  function bindShareButtons() {
-    var slots = elList.querySelectorAll('.share-slot');
-    slots.forEach(function(slot) {
-      var code = slot.dataset.code || '';
-      var normCode = slot.dataset.norm || '';
-      var name = slot.dataset.name || '';
-      var rowText = slot.dataset.row || '';
+  function renderCount(){
+    var total = view.list.length;
+    var shown = Math.min(view.shown, total);
+    els.count.innerHTML = 'Найдено: <b>' + fmt(total) + '</b> · Показано: <b>' + fmt(shown) + '</b>';
+  }
 
-      var wrap = document.createElement('klassik-share');
-      wrap.setAttribute('catalog', 'okof');
-      wrap.setAttribute('title', 'ОКОФ: ' + code + ' — ' + name);
-      wrap.setAttribute('text', rowText);
-      wrap.setAttribute('url', location.origin + location.pathname + '?code=' + encodeURIComponent(normCode));
+  function renderMore(){
+    var total = view.list.length;
+    var shown = Math.min(view.shown, total);
+    if(shown >= total || total === 0){
+      els.more.hidden = true;
+    } else {
+      els.more.hidden = false;
+      els.more.textContent = 'Показать ещё +' + PAGE + ' (показано ' + fmt(shown) + ' из ' + fmt(total) + ')';
+    }
+  }
+
+  function appendPage(){
+    var total = view.list.length;
+    if(total === 0){
+      if (activeDeepLinkCode) {
+        els.results.innerHTML = '<div style="padding:32px 4px;text-align:center;color:var(--muted)">Код не найден. Возможно, запись удалена из классификатора.<br><br>Нажмите «Очистить поиск», чтобы увидеть весь список.</div>';
+      } else {
+        els.results.innerHTML = '<div style="padding:32px 4px;text-align:center;color:var(--muted)">Ничего не найдено. Попробуйте изменить запрос или сбросить фильтры.</div>';
+      }
+      renderCount(); renderMore(); return;
+    }
+
+    var end = Math.min(view.shown + PAGE, total);
+    var html = [];
+    var pq = prepareQuery(els.q.value);
+    var tokens = pq.tokens.concat(pq.isCodeOnly ? [pq.raw] : []);
+
+    for(var i=view.shown; i<end; i++){
+      html.push(cardHTML(view.list[i], tokens));
+    }
+    els.results.insertAdjacentHTML('beforeend', html.join(''));
+
+    bindShareButtons();
+
+    view.shown = end;
+    renderCount();
+    renderMore();
+  }
+
+  function getShareText(r, url) {
+    var lines = [r.code + ' (' + r.codeNorm + ') — ' + r.name];
+    if (r.sec) {
+      var secName = els.sec.querySelector('option[value="' + r.sec + '"]');
+      var secText = secName ? secName.textContent.split(' — ')[1].split(' (')[0] : 'Раздел ' + r.sec;
+      lines.push('Раздел: ' + r.sec + ' (' + secText + ')');
+    }
+    lines.push('Ссылка: ' + url);
+    return lines.join('\n');
+  }
+
+  function bindShareButtons() {
+    if (!window.customElements || !customElements.get('klassik-share')) return;
+    
+    var slots = els.results.querySelectorAll('.share-slot');
+    for (var j=0; j<slots.length; j++) {
+      var fallback = slots[j].querySelector('.btn-share-fallback');
+      if (!fallback) continue;
+
+      var code = slots[j].getAttribute('data-code');
+      var nameText = slots[j].getAttribute('data-name');
+      var url = window.location.origin + window.location.pathname + '?code=' + code;
+      var r = DATA.find(function(x){ return x.codeNorm === code; });
+      var fullText = r ? getShareText(r, url) : (nameText + '\n' + url);
+
+      var el = document.createElement('klassik-share');
+      el.setAttribute('catalog', 'okof');
+      el.setAttribute('title', 'ОКОФ: ' + code + ' — ' + nameText);
+      el.setAttribute('text', fullText);
+      el.setAttribute('url', '');
 
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'btn-small';
-      btn.title = 'Поделиться карточкой';
-      btn.innerHTML = '📤 Поделиться';
-      wrap.appendChild(btn);
+      btn.className = 'action-btn';
+      btn.title = 'Поделиться этой записью';
+      btn.setAttribute('aria-label', 'Поделиться записью');
+      btn.textContent = '📤 Поделиться';
 
-      slot.parentNode.replaceChild(wrap, slot);
-    });
-  }
-
-  // ---------- подсветка ----------
-  function hlText(text, rawTerms){
-    var safe = escHtml(text);
-    if(!rawTerms || !rawTerms.length) return safe;
-    var re = new RegExp("("+rawTerms.map(escRe).join("|")+")","gi");
-    return safe.replace(re,"<mark>$1</mark>");
-  }
-  function hlCode(code, digits){
-    var safe = escHtml(code);
-    if(digits && code.indexOf(digits)===0){
-      return "<mark>"+escHtml(digits)+"</mark>"+escHtml(code.slice(digits.length));
-    }
-    if(digits && code.indexOf(digits)>=0){
-      return safe.replace(new RegExp("("+escRe(digits)+")"),"<mark>$1</mark>");
-    }
-    return safe;
-  }
-
-  // ---------- карточка ----------
-  function buildCard(r, terms, digits){
-    var li = document.createElement("li");
-    var card = document.createElement("article");
-    card.className="card";
-    card.dataset.code = r.codeNorm;
-
-    var top = document.createElement("div"); top.className="card-top";
-
-    // код с точками (raw)
-    var codeBtn = document.createElement("button");
-    codeBtn.type="button"; codeBtn.className="code";
-    codeBtn.innerHTML = hlCode(r.code, digits);
-    codeBtn.title = "Копировать код с точками: "+r.code;
-    codeBtn.dataset.act="copy-code"; codeBtn.dataset.val=r.code; codeBtn.dataset.norm=r.codeNorm;
-    top.appendChild(codeBtn);
-
-    // код без точек (codeNorm)
-    var normBtn = document.createElement("button");
-    normBtn.type="button"; normBtn.className="code-norm";
-    normBtn.innerHTML = hlCode(r.codeNorm, digits);
-    normBtn.title = "Копировать код без точек: "+r.codeNorm;
-    normBtn.dataset.act="copy-norm"; normBtn.dataset.val=r.codeNorm;
-    top.appendChild(normBtn);
-
-    // бейдж раздела (кликабельный фильтр)
-    if(r.section){
-      var secData = (META && META.sections) ? META.sections.find(function(s){return s.section === r.section;}) : null;
-      var secName = secData ? secData.name : "Раздел";
-      var secBtn = document.createElement("button");
-      secBtn.type="button"; secBtn.className="badge-sec";
-      secBtn.textContent = r.section + " — " + secName;
-      secBtn.title = "Показать только раздел " + r.section;
-      secBtn.dataset.act="filter-sec"; secBtn.dataset.val=r.section;
-      top.appendChild(secBtn);
-    }
-
-    // actions
-    var actions = document.createElement("div"); actions.className = "card-actions";
-
-    var fullVal = [r.code, r.name].join("; ");
-
-    var rowBtn = document.createElement("button");
-    rowBtn.type="button"; rowBtn.className="btn-small";
-    rowBtn.innerHTML = "📋 строка";
-    rowBtn.title = "Скопировать: "+fullVal;
-    rowBtn.dataset.act="copy-full"; rowBtn.dataset.val=fullVal;
-    actions.appendChild(rowBtn);
-
-    var shareSlot = document.createElement("span");
-    shareSlot.className = "share-slot";
-    shareSlot.dataset.code = r.code;
-    shareSlot.dataset.norm = r.codeNorm;
-    shareSlot.dataset.name = r.name;
-    shareSlot.dataset.row = fullVal;
-    actions.appendChild(shareSlot);
-
-    top.appendChild(actions);
-    card.appendChild(top);
-
-    // наименование
-    var name = document.createElement("div"); name.className="name";
-    name.innerHTML = hlText(r.name, terms);
-    card.appendChild(name);
-
-    li.appendChild(card);
-    return li;
-  }
-
-  // ---------- навигация ----------
-  function focusCode(codeNorm){
-    setTimeout(function(){
-      var el = document.querySelector('article.card[data-code="'+codeNorm+'"]');
-      if(!el) return;
-      document.querySelectorAll(".card.highlight").forEach(function(node){ node.classList.remove("highlight"); });
-      el.classList.add("highlight");
-      el.scrollIntoView({behavior:"smooth", block:"center"});
-      setTimeout(function(){ el.classList.remove("highlight"); }, 1800);
-    }, 30);
-  }
-
-  // ---------- URL ----------
-  function parseUrlAndApply(){
-    var sp = new URLSearchParams(location.search);
-    var rawCode = sp.get("code");
-    var q = sp.get("q") || "";
-    var sec = sp.get("section") || "";
-
-    elSec.value = sec;
-
-    if(rawCode){
-      var codeNorm = normalizeCodeQuery(rawCode);
-      activeDeepLinkCode = codeNorm;
-      elQ.value = rawCode;
-      syncClear();
-      applyFilters();
-      focusCode(codeNorm);
-      return;
-    }
-
-    activeDeepLinkCode = null;
-    elQ.value = q;
-    syncClear();
-    applyFilters();
-  }
-
-  // В URL пишем только ?section=, если он задан (поиск эфемерный).
-  // Если активен ?code= — URL не трогаем, там уже канонический параметр.
-  function syncUrl(){
-    if(activeDeepLinkCode) return;
-    var sp = new URLSearchParams();
-    var sec = elSec.value; if(sec) sp.set("section", sec);
-    var qs = sp.toString();
-    var url = location.pathname + (qs?("?"+qs):"");
-    try{ history.replaceState(null,"",url); }catch(e){}
-  }
-
-  function syncCodeToUrl(codeNorm){
-    try{ history.replaceState(null, "", location.pathname + "?code=" + encodeURIComponent(codeNorm)); }catch(e){}
-  }
-
-  function clearCodeFromUrl(){
-    if (location.search.indexOf("code=") >= 0) {
-      try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){}
+      el.appendChild(btn);
+      slots[j].replaceChild(el, fallback);
     }
   }
 
-  // ---------- копирование + тост ----------
-  var toastTimer=null;
-  function toast(msg){
-    elToast.textContent = msg;
-    elToast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ elToast.classList.remove("show"); }, 1800);
-  }
-  function copyText(text, label){
-    var done=function(){ toast(label); };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text); done(); });
-    }else{ fallbackCopy(text); done(); }
-  }
-  function fallbackCopy(text){
-    var ta=document.createElement("textarea");
-    ta.value=text; ta.setAttribute("readonly",""); ta.style.position="absolute"; ta.style.left="-9999px";
-    document.body.appendChild(ta); ta.select();
-    try{ document.execCommand("copy"); }catch(e){}
-    document.body.removeChild(ta);
+  if (window.customElements) {
+    customElements.whenDefined('klassik-share').then(bindShareButtons);
   }
 
-  function onListClick(e){
-    var btn = e.target.closest("[data-act]");
-    if(!btn) return;
-    var act = btn.dataset.act, val = btn.dataset.val, normVal = btn.dataset.norm;
+  function cardHTML(r, queryTokens){
+    var isHighlight = (r.codeNorm === activeDeepLinkCode);
+    var titleHtml = highlight(r.name, queryTokens);
 
-    if(act==="copy-code"){
-      copyText(val, "Код "+val+" скопирован");
-      if(normVal){ activeDeepLinkCode = normVal; syncCodeToUrl(normVal); }
+    var badgesHtml = '';
+    if (r.sec) {
+      var secOpt = els.sec.querySelector('option[value="' + r.sec + '"]');
+      var secName = secOpt ? secOpt.textContent.split(' — ')[1].split(' (')[0] : 'Раздел ' + r.sec;
+      badgesHtml += '<span class="badge sec clickable" data-sec="' + r.sec + '" title="Показать только раздел: ' + esc(secName) + '">§' + r.sec + ' ' + esc(secName) + '</span>';
     }
-    else if(act==="copy-norm"){
-      copyText(val, "Код без точек "+val+" скопирован");
-      activeDeepLinkCode = val; syncCodeToUrl(val);
-    }
-    else if(act==="copy-full"){
-      copyText(val, "Скопировано: "+val);
-    }
-    else if(act==="filter-sec"){
-      activeDeepLinkCode = null;
-      clearCodeFromUrl();
-      elSec.value = val;
-      applyFilters();
-      syncUrl();
-      window.scrollTo({top:0,behavior:"smooth"});
-    }
-  }
 
-  // ---------- события ----------
-  function syncClear(){ elBox.classList.toggle("has-val", !!elQ.value); }
+    // Хайлайт для кодов
+    var codeHtml = highlight(r.code, queryTokens);
+    var normHtml = highlight(r.codeNorm, queryTokens);
 
-  var deb=null;
-  function onInput(){
-    activeDeepLinkCode = null;
-    clearCodeFromUrl();
-    syncClear();
-    clearTimeout(deb);
-    deb=setTimeout(function(){ applyFilters(); syncUrl(); }, DEBOUNCE_MS);
-  }
-
-  elQ.addEventListener("input", onInput);
-  elQ.addEventListener("search", function(){
-    activeDeepLinkCode = null;
-    clearCodeFromUrl();
-    syncClear(); applyFilters(); syncUrl();
-  });
-  elClear.addEventListener("click", function(){
-    activeDeepLinkCode = null;
-    clearCodeFromUrl();
-    elQ.value=""; syncClear(); applyFilters(); syncUrl(); elQ.focus();
-  });
-  elSec.addEventListener("change", function(){
-    activeDeepLinkCode = null;
-    clearCodeFromUrl();
-    applyFilters();
-    syncUrl();
-  });
-  elReset.addEventListener("click", function(e){
-    e.preventDefault();
-    activeDeepLinkCode = null;
-    clearCodeFromUrl();
-    elQ.value="";
-    elSec.value="";
-    syncClear();
-    applyFilters();
-    syncUrl();
-    elQ.focus();
-  });
-  elMore.addEventListener("click", function(){ shown += PAGE_SIZE; renderList(); });
-  elList.addEventListener("click", onListClick);
-
-  window.addEventListener("popstate", function(){ parseUrlAndApply(); });
-
-  function onScroll(){
-    var y = window.scrollY || document.documentElement.scrollTop || 0;
-    var docH = document.documentElement.scrollHeight;
-    var winH = window.innerHeight;
-    elTop.style.display = (y>SCROLL_THRESHOLD) ? "block":"none";
-    elBottom.style.display = (y>SCROLL_THRESHOLD && (y+winH) < (docH-40)) ? "block":"none";
-  }
-  window.addEventListener("scroll", onScroll, {passive:true});
-  window.addEventListener("resize", onScroll);
-  elTop.addEventListener("click", function(){ window.scrollTo({top:0,behavior:"smooth"}); });
-  elBottom.addEventListener("click", function(){ window.scrollTo({top:document.documentElement.scrollHeight,behavior:"smooth"}); });
-
-  // ---------- дата / футер ----------
-  function renderDateLine(){
-    if(META){
-      if(META.change_display) elDateFoot.textContent = META.change_display;
-      else if(META.source_date_display) elDateFoot.textContent = "Снимок от " + META.source_date_display;
-      else elDateFoot.textContent = "Дата актуальности не определена";
-    }else{
-      elDateFoot.textContent = "Дата актуальности не определена";
-    }
-    var titleParts=[];
-    if(META && META.standard_line) titleParts.push(META.standard_line);
-    if(META && META.provenance) titleParts.push(META.provenance);
-    elDateFoot.title = titleParts.join(" | ");
-  }
-
-  function mergeSources(metaSources, defaults) {
-    var byUrl = new Map(defaults.map(function(s){ return [s.url, s]; }));
-    if (Array.isArray(metaSources)) {
-      for (var i=0;i<metaSources.length;i++){
-        var s = metaSources[i];
-        if (s && s.url && !byUrl.has(s.url)) byUrl.set(s.url, s);
-      }
-    }
-    return Array.from(byUrl.values());
-  }
-
-  function linkFor(s) {
-    var a = document.createElement('a');
-    a.href = s.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.textContent = s.name;
-    a.title = s.name;
-    return a;
+    return '<article class="card' + (isHighlight ? ' highlight' : '') + '" data-code="' + esc(r.codeNorm) + '" title="Карточка: ' + esc(r.name) + '">' +
+      '<div class="row1">' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
+          '<button type="button" class="code-btn" data-copy="' + r.code + '" data-code="' + r.codeNorm + '" title="Скопировать код с точками">' + codeHtml + '</button>' +
+          '<button type="button" class="code-btn norm" data-copy="' + r.codeNorm + '" data-code="' + r.codeNorm + '" title="Скопировать код без точек">' + normHtml + '</button>' +
+        '</div>' +
+        '<div class="badges">' + badgesHtml + '</div>' +
+      '</div>' +
+      '<div class="name">' + titleHtml + '</div>' +
+      '<div class="actions">' +
+        '<div class="share-slot" data-code="' + r.codeNorm + '" data-name="' + esc(r.name) + '">' +
+          '<button type="button" class="action-btn btn-share-fallback" data-code="' + r.codeNorm + '" data-name="' + esc(r.name) + '" title="Поделиться этой записью" aria-label="Поделиться записью">📤 Поделиться</button>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
   }
 
   function renderFooter(){
-    // Статистика из фактического массива (не из меты).
-    var total = RECORDS.length;
-    var secCount = (META && Array.isArray(META.sections)) ? META.sections.length : 0;
-    var s = "В справочнике "+fmtNum(total)+" "+plural(total,["запись","записи","записей"])+
-            " и "+fmtNum(secCount)+" "+plural(secCount,["вид ОФ","вида ОФ","видов ОФ"])+".";
-    elFootLead.innerHTML = escHtml(s).replace(/(\d[\d\u00a0.]*)/g,"<b>$1</b>");
-
-    // Фильтруем источники: Росстандарт (protect.gost.ru) в футер не выводим.
-    var allSources = (META && Array.isArray(META.primary_sources)) ? META.primary_sources : [];
-
-    // classifikators.ru — машиночитаемый снимок, идёт в «Источник данных»,
-    // даже если в мете он помечен role: secondary.
-    var primaryList = allSources.filter(function(x){
-      if (!x || !x.url) return false;
-      if (x.url.indexOf('gost.ru') >= 0) return false;
-      return x.role === 'primary' || x.url.indexOf('classifikators.ru') >= 0;
+    var total = (META && META.records_count) || DATA.length || 2134;
+    
+    var sCounts = {};
+    DATA.forEach(function(r) {
+      if (r.sec) sCounts[r.sec] = (sCounts[r.sec] || 0) + 1;
     });
+    
+    var secCount = Object.keys(sCounts).length;
+    els.footstats.innerHTML = 'В справочнике <b>' + fmt(total) + '</b> записей и <b>' + fmt(secCount) + '</b> видов ОФ.';
 
-    // В «Первоисточники» — всё secondary, кроме Росстандарта и classifikators.
-    var secondaryList = allSources.filter(function(x){
-      if (!x || !x.url) return false;
-      if (x.url.indexOf('gost.ru') >= 0) return false;
-      if (x.url.indexOf('classifikators.ru') >= 0) return false;
-      return x.role === 'secondary';
-    });
+    if (META && META.change_display) {
+      els.footdate.textContent = META.change_display;
+    } else if (META && META.source_date_display) {
+      els.footdate.textContent = 'Снимок от ' + META.source_date_display;
+    } else if (META && META.source_date) {
+      els.footdate.textContent = 'Снимок от ' + META.source_date;
+    } else {
+      els.footdate.textContent = 'Дата актуальности: не определена';
+    }
 
-    var mergedPrimary = mergeSources(primaryList, DEFAULT_PRIMARY_SOURCES);
-    var mergedSecondary = mergeSources(secondaryList, DEFAULT_SECONDARY_SOURCES);
+    var sources = DEFAULT_PRIMARY_SOURCES.concat(DEFAULT_SECONDARY_SOURCES);
+    if (META && Array.isArray(META.primary_sources)){
+      META.primary_sources.forEach(function(src){
+        if (!src || !src.url) return;
+        var existing = sources.find(function(d){ return d.url === src.url; });
+        if (existing) {
+          if (src.role) existing.role = src.role;
+          if (src.name) existing.name = src.name;
+        } else {
+          sources.push(src);
+        }
+      });
+    }
 
-    elSourcesPrimary.innerHTML = '<span class="cap">Источник данных (машиночитаемый снимок):</span>';
-    mergedPrimary.forEach(function(src){ elSourcesPrimary.appendChild(linkFor(src)); });
+    var primaryList = sources.filter(function(s){ return s.url && s.role === 'primary'; });
+    // Исключаем classifikators из secondary, если он попал туда
+    var secondaryList = sources.filter(function(s){ return s.url && s.role !== 'primary' && s.url.indexOf('classifikators.ru') === -1; });
 
-    elSourcesSecondary.innerHTML = '<span class="cap">Первоисточники и текстовые редакции для сверки:</span>';
-    mergedSecondary.forEach(function(src){ elSourcesSecondary.appendChild(linkFor(src)); });
+    els.footPrimary.innerHTML = '<div class="row-label">Источник данных (машиночитаемый снимок):</div>' +
+      primaryList.map(function(s){
+        return '<a href="' + esc(s.url) + '" rel="noopener" target="_blank">' + esc(s.name) + '</a>';
+      }).join(" ");
 
-    var aboutLink = document.createElement('a');
-    aboutLink.href = 'https://github.com/prog815/okof';
-    aboutLink.target = '_blank';
-    aboutLink.rel = 'noopener noreferrer';
-    aboutLink.textContent = 'О справочнике';
-    aboutLink.title = 'О справочнике (репозиторий проекта)';
-    elSourcesSecondary.appendChild(aboutLink);
+    var secHtml = secondaryList.map(function(s){
+      return '<a href="' + esc(s.url) + '" rel="noopener" target="_blank">' + esc(s.name) + '</a>';
+    }).join(" ");
+    secHtml += ' <a href="https://github.com/prog815/okof" rel="noopener" target="_blank">О справочнике</a>';
 
-    var d = (META && META.disclaimer) ? META.disclaimer
-      : "Материалы носят справочный характер и не являются точными копиями официальных документов. "+
-        "Перед применением в официальных документах сверяйте по первоисточнику (Росстандарт).";
-    d += " ОКОФ не устанавливает амортизационные группы — сроки полезного использования определены отдельно, в ПП РФ № 1 от 01.01.2002.";
-    elFootDisc.textContent = d;
+    els.footSecondary.innerHTML = '<div class="row-label">Первоисточники и текстовые редакции для сверки:</div>' + secHtml;
   }
 
-  syncClear();
-  loadAll();
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function(resolve, reject){
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? resolve() : reject();
+      } catch (e) { reject(e); }
+    });
+  }
+
+  var debTimer = null;
+  els.q.addEventListener('input', function(){
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
+    clearTimeout(debTimer);
+    debTimer = setTimeout(runSearch, 180);
+  });
+
+  els.sec.addEventListener('change', function() {
+    activeDeepLinkCode = null;
+    clearCodeFromUrl();
+    var url = new URL(window.location);
+    if (els.sec.value) url.searchParams.set('section', els.sec.value);
+    else url.searchParams.delete('section');
+    history.replaceState(null, '', url.toString());
+    runSearch();
+  });
+
+  function resetAllAction() {
+    els.q.value = '';
+    els.sec.value = '';
+    activeDeepLinkCode = null;
+    var url = new URL(window.location);
+    url.searchParams.delete('code');
+    url.searchParams.delete('section');
+    history.replaceState(null, '', url.toString());
+    runSearch();
+    els.q.focus();
+  }
+
+  els.clearAll.addEventListener('click', resetAllAction);
+  els.more.addEventListener('click', appendPage);
+
+  els.results.addEventListener('click', function(ev){
+    var target = ev.target;
+
+    var badgeSec = target.closest('.badge.sec');
+    if (badgeSec) {
+      els.sec.value = badgeSec.getAttribute('data-sec');
+      activeDeepLinkCode = null;
+      var url = new URL(window.location);
+      url.searchParams.delete('code');
+      url.searchParams.set('section', els.sec.value);
+      history.replaceState(null, '', url.toString());
+      runSearch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    var codeBtn = target.closest('.code-btn');
+    if (codeBtn) {
+      var c = codeBtn.getAttribute('data-copy');
+      var norm = codeBtn.getAttribute('data-code');
+      copyText(c).then(function(){
+        showToast('Код ' + c + ' скопирован');
+      }).catch(function(){
+        showToast('Не удалось скопировать');
+      });
+      syncCodeToUrl(norm);
+      activeDeepLinkCode = norm;
+      return;
+    }
+
+    var btnShare = target.closest('.btn-share-fallback');
+    if(btnShare) {
+      var code = btnShare.getAttribute('data-code');
+      var name = btnShare.getAttribute('data-name');
+      var url = window.location.origin + window.location.pathname + '?code=' + code;
+      var r = DATA.find(function(x){ return x.codeNorm === code; });
+      var shareText = r ? getShareText(r, url) : (name + '\n' + url);
+
+      if (navigator.share) {
+        navigator.share({
+          title: 'ОКОФ: ' + code + ' — ' + name,
+          text: shareText
+        }).catch(console.error);
+      } else {
+        copyText(shareText).then(function(){
+          showToast('Сообщение скопировано');
+        });
+      }
+      return;
+    }
+  });
+
+  var toastTimer = null;
+  function showToast(msg){
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ els.toast.classList.remove('show'); }, 1800);
+  }
+
+  function onScroll(){
+    var y = window.scrollY || document.documentElement.scrollTop;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    els.fabUp.classList.toggle('show', y > 300);
+    els.fabDown.classList.toggle('show', y > 300 && y < max - 40);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  els.fabUp.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  els.fabDown.addEventListener('click', function(){ window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); });
+
+  window.addEventListener('popstate', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var codeParam = urlParams.get('code');
+    var secParam = urlParams.get('section');
+
+    if (secParam) els.sec.value = secParam;
+    else els.sec.value = '';
+
+    if (codeParam) {
+      var cleanCode = codeParam.replace(/\D/g, '');
+      var found = DATA.find(function(r) { return r.codeNorm === cleanCode; });
+      activeDeepLinkCode = found ? cleanCode : null;
+      els.q.value = codeParam;
+    } else {
+      activeDeepLinkCode = null;
+      els.q.value = '';
+    }
+    runSearch();
+  });
+
+  boot();
 })();
 </script>
 </body>
